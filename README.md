@@ -1,0 +1,2 @@
+# NextSeed Manga
+# nextseed-manga
