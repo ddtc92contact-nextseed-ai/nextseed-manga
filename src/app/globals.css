@@ -73,6 +73,15 @@
   box-shadow: 6px 6px 0 0 var(--color-accent);
 }
 
+/*
+ * The chapter reader (#reader) brings its own chrome: hide the site header, and the footer while
+ * the full-screen manga mode is on. Pure CSS, so it applies from the first paint (no layout shift).
+ */
+body:has(#reader) > header,
+body:has(#reader[data-mode="manga"]) > footer {
+  display: none;
+}
+
 @layer base {
   html {
     color-scheme: dark;

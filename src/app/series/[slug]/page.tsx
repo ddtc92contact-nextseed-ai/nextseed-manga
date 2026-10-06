@@ -129,8 +129,8 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
                         {date(chapter.date)} · {t.pageCount(chapter.pages.length)}
                       </span>
                     </span>
-                    <span aria-hidden="true" className="hidden font-display text-xl text-paper-faint group-hover:text-accent sm:block">
-                      →
+                    <span className="hidden shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-paper-faint group-hover:text-accent sm:flex">
+                      Read <span aria-hidden="true" className="font-display text-xl">→</span>
                     </span>
                   </Link>
                 </li>
