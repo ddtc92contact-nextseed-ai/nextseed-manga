@@ -7,6 +7,9 @@ services:
   nextseed-manga:
     build:
       context: .
+      args:
+        # Canonical URLs, Open Graph tags and sitemap.xml are generated at build time.
+        SITE_URL: https://${SITE_DOMAIN:?set SITE_DOMAIN in .env}
     image: nextseed-manga:${IMAGE_TAG:-latest}
     container_name: nextseed-manga
     restart: unless-stopped

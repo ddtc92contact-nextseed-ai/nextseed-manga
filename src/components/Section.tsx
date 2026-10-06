@@ -22,6 +22,8 @@ type SectionProps = {
   /** id of a heading rendered in `children`, when no `title` is passed. */
   labelledBy?: string;
   tone?: Tone;
+  /** Use "h1" when the section is the top of its page (e.g. the gallery). */
+  headingLevel?: "h1" | "h2";
   className?: string;
   children?: ReactNode;
 };
@@ -35,6 +37,7 @@ export function Section({
   action,
   labelledBy,
   tone = "ink",
+  headingLevel: Heading = "h2",
   className = "",
   children,
 }: SectionProps) {
@@ -61,9 +64,9 @@ export function Section({
                 </p>
               )}
               {title && (
-                <h2 id={headingId} className="font-display text-display-sm">
+                <Heading id={headingId} className="font-display text-display-sm">
                   {title}
-                </h2>
+                </Heading>
               )}
               {intro && (
                 <div className={`mt-4 text-lg leading-relaxed ${mutedText}`}>

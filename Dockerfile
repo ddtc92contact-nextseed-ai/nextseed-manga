@@ -16,6 +16,8 @@ WORKDIR /app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Public URL baked into canonical URLs, Open Graph tags and sitemap.xml (passed by docker-compose.yml).
+ARG SITE_URL
 RUN npm run build
 
 # 3. Runtime: only the traced standalone server, static assets and public files.

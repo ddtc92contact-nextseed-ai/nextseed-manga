@@ -1,10 +1,10 @@
 import Image from "next/image";
 
-import { ArtworkCard } from "@/components/ArtworkCard";
 import { Button } from "@/components/Button";
+import { CreationCard } from "@/components/CreationCard";
 import { Hero } from "@/components/Hero";
 import { Section } from "@/components/Section";
-import { latestCreations } from "@/lib/creations";
+import { getCreations } from "@/lib/content";
 
 import artistImage from "../../public/placeholder/artist.webp";
 import heroImage from "../../public/placeholder/hero.webp";
@@ -28,6 +28,8 @@ const process = [
 ];
 
 export default function Home() {
+  const latestCreations = getCreations().slice(0, 6);
+
   return (
     <>
       <Hero
@@ -58,15 +60,17 @@ export default function Home() {
         kicker="Chapter 01"
         title="Latest creations"
         intro="Fresh off the press: the most recent pages and covers from the studio."
+        action={
+          <Button href="/gallery" variant="outline">
+            View the gallery
+          </Button>
+        }
       >
         <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 md:grid-cols-3 lg:gap-x-8 lg:gap-y-12">
           {latestCreations.map((creation, i) => (
-            <li key={creation.slug}>
-              <ArtworkCard
-                title={creation.title}
-                subtitle={`${creation.series} · ${creation.year}`}
-                image={creation.image}
-                alt={creation.alt}
+            <li key={creation.href}>
+              <CreationCard
+                creation={creation}
                 index={i + 1}
                 sizes="(min-width: 1408px) 430px, (min-width: 768px) 31vw, 46vw"
               />
@@ -137,7 +141,7 @@ export default function Home() {
               New pages land regularly. Dive into the gallery and come back for the next volume.
             </p>
           </div>
-          <Button href="#latest" variant="ink" size="lg">
+          <Button href="/gallery" variant="ink" size="lg">
             Browse the gallery
           </Button>
         </div>
