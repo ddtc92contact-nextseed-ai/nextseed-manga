@@ -5,7 +5,8 @@ export const site = {
     "A showcase of manga artwork and stories created with generative image AI by NextSeed-AI.",
   nav: [
     { label: "Creations", href: "/#latest" },
-    { label: "About", href: "/#about" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/about#contact" },
     { label: "Follow", href: "/#follow" },
   ],
 } as const;
