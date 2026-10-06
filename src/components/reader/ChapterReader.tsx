@@ -4,11 +4,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { seriesLabels } from "@/lib/labels";
+
 import { ChapterEnd } from "./ChapterEnd";
 import { MangaView } from "./MangaView";
 import { usePreference } from "./prefs";
 import { type ReaderData, readingDirections, readingModes } from "./types";
 import { WebtoonView } from "./WebtoonView";
+
+type ReaderLabels = ReturnType<typeof seriesLabels>["reader"];
 
 /** How long the chrome stays up after the last mouse move / navigation in manga mode. */
 const CHROME_IDLE_MS = 2500;
@@ -18,7 +22,8 @@ const modeLabel = { webtoon: "Webtoon", manga: "Manga" } as const;
 /**
  * Chapter reader: webtoon (vertical scroll) or manga (page by page) mode, with a minimal chrome
  * that hides while reading and comes back on tap, upward scroll or mouse movement.
- * The mode is remembered per series; the reading direction (manga mode) is remembered globally.
+ * The mode and the reading direction (manga mode) are remembered per series; their defaults come
+ * from series.json (`readingMode`, `readingDirection`). Labels follow the series `language`.
  */
 export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
   const router = useRouter();
@@ -27,7 +32,12 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
     readingModes,
     series.readingMode,
   );
-  const [direction, setDirection] = usePreference("nextseed:reader-direction", readingDirections, "rtl");
+  const [direction, setDirection] = usePreference(
+    `nextseed:reader-direction:${series.slug}`,
+    readingDirections,
+    series.readingDirection,
+  );
+  const t = seriesLabels(series.language).reader;
   const [page, setPage] = useState(0);
   const [chromeVisible, setChromeVisible] = useState(true);
   const chromeRef = useRef<HTMLDivElement>(null);
@@ -111,15 +121,16 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
 
   const end = <ChapterEnd series={series} chapter={chapter} next={next} />;
   const visible = chromeVisible || atEnd;
-  const counter = atEnd ? "End" : `${page + 1} / ${total}`;
+  const counter = atEnd ? t.end : `${page + 1} / ${total}`;
 
   /* ----------------------------------------------------------------- render */
 
   return (
-    <div id="reader" data-mode={mode} className="min-h-dvh bg-ink-950">
+    <div id="reader" lang={series.language} data-mode={mode} className="min-h-dvh bg-ink-950">
       {mode === "webtoon" ? (
         <WebtoonView
           pages={chapter.pages}
+          label={t.pages}
           page={page}
           initialPage={page}
           onPageChange={setPage}
@@ -132,6 +143,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
         <div className="fixed inset-0 z-40 bg-ink-950">
           <MangaView
             pages={chapter.pages}
+            label={t.pages}
             page={page}
             onPageChange={setPage}
             direction={direction}
@@ -144,7 +156,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
       )}
 
       <p aria-live="polite" className="sr-only">
-        {atEnd ? `End of chapter ${chapter.number}` : `Page ${page + 1} of ${total}`}
+        {atEnd ? t.endOf(chapter.number) : t.pageOf(page + 1, total)}
       </p>
 
       <div ref={chromeRef} onFocus={showChrome}>
@@ -154,7 +166,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
           <div className="mx-auto flex h-14 max-w-site items-center gap-3 px-gutter lg:px-gutter-lg">
             <Link
               href={series.href}
-              aria-label={`Back to ${series.title}`}
+              aria-label={t.backTo(series.title)}
               className="-ml-2 flex size-11 shrink-0 items-center justify-center text-xl text-paper-muted transition-colors hover:text-accent"
             >
               <span aria-hidden="true">←</span>
@@ -164,10 +176,10 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
                 {series.title}
               </span>
               <span className="block truncate font-display text-sm sm:text-base">
-                Ch. {chapter.number} · {chapter.title}
+                {t.short(chapter.number)} · {chapter.title}
               </span>
             </h1>
-            <div role="group" aria-label="Reading mode" className="flex shrink-0 border-2 border-paper">
+            <div role="group" aria-label={t.readingMode} className="flex shrink-0 border-2 border-paper">
               {readingModes.map((m) => (
                 <button
                   key={m}
@@ -186,7 +198,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
         </header>
 
         <nav
-          aria-label="Reader"
+          aria-label={t.reader}
           className={`fixed inset-x-0 bottom-0 z-50 border-t border-ink-700 bg-ink-950/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md ease-out motion-safe:transition-transform motion-safe:duration-300 ${visible ? "" : "translate-y-full"}`}
         >
           <div aria-hidden="true" className="h-1 bg-ink-700">
@@ -197,13 +209,13 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
           </div>
           <div className="mx-auto grid h-14 max-w-site grid-cols-[1fr_auto_1fr] items-center gap-2 px-gutter lg:px-gutter-lg">
             <div className="flex justify-start">
-              <ChapterLink target={previous} label="Previous chapter" prefix="←" />
+              <ChapterLink target={previous} label={t.previousChapter} labels={t} prefix="←" />
             </div>
 
             <div className="flex items-center gap-1">
               {mode === "manga" && (
                 <PageButton
-                  label={rtl ? "Next page" : "Previous page"}
+                  label={rtl ? t.nextPage : t.previousPage}
                   disabled={rtl ? atEnd : page === 0}
                   onClick={() => setPage((p) => Math.min(total, Math.max(0, p + (rtl ? 1 : -1))))}
                 >
@@ -215,7 +227,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
               </span>
               {mode === "manga" && (
                 <PageButton
-                  label={rtl ? "Previous page" : "Next page"}
+                  label={rtl ? t.previousPage : t.nextPage}
                   disabled={rtl ? page === 0 : atEnd}
                   onClick={() => setPage((p) => Math.min(total, Math.max(0, p + (rtl ? -1 : 1))))}
                 >
@@ -226,17 +238,17 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
                 <button
                   type="button"
                   onClick={() => setDirection(direction === "rtl" ? "ltr" : "rtl")}
-                  aria-label={`Reading direction: ${direction === "rtl" ? "right to left" : "left to right"}. Switch.`}
-                  title="Switch reading direction"
+                  aria-label={t.direction(direction === "rtl")}
+                  title={t.switchDirection}
                   className="ml-1 min-h-9 border border-ink-600 px-2 text-xs font-semibold uppercase tracking-wider text-paper-muted transition-colors hover:border-paper hover:text-paper"
                 >
-                  {direction === "rtl" ? "RTL" : "LTR"}
+                  {t.directionShort(direction === "rtl")}
                 </button>
               )}
             </div>
 
             <div className="flex justify-end">
-              <ChapterLink target={next} label="Next chapter" suffix="→" />
+              <ChapterLink target={next} label={t.nextChapter} labels={t} suffix="→" />
             </div>
           </div>
         </nav>
@@ -248,11 +260,13 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
 function ChapterLink({
   target,
   label,
+  labels: t,
   prefix,
   suffix,
 }: {
   target?: ReaderData["next"];
   label: string;
+  labels: ReaderLabels;
   prefix?: string;
   suffix?: string;
 }) {
@@ -260,8 +274,8 @@ function ChapterLink({
     <>
       {prefix && <span aria-hidden="true">{prefix}</span>}
       <span>
-        <span className="sm:hidden">Ch. {target?.number ?? "—"}</span>
-        <span className="hidden sm:inline">{target ? `Ch. ${target.number}` : label}</span>
+        <span className="sm:hidden">{target ? t.short(target.number) : "—"}</span>
+        <span className="hidden sm:inline">{target ? t.short(target.number) : label}</span>
       </span>
       {suffix && <span aria-hidden="true">{suffix}</span>}
     </>
@@ -277,7 +291,7 @@ function ChapterLink({
   return (
     <Link
       href={target.href}
-      aria-label={`${label}: chapter ${target.number}, ${target.title}`}
+      aria-label={t.chapterLink(label, target.number, target.title)}
       title={target.title}
       className={`${classes} text-paper-muted transition-colors hover:text-accent`}
     >

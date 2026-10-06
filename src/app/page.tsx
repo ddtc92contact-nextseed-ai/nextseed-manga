@@ -4,10 +4,8 @@ import { Button } from "@/components/Button";
 import { CreationCard } from "@/components/CreationCard";
 import { Hero } from "@/components/Hero";
 import { Section } from "@/components/Section";
-import { getCreations } from "@/lib/content";
-
-import artistImage from "../../public/placeholder/artist.webp";
-import heroImage from "../../public/placeholder/hero.webp";
+import { getCreations, getFeaturedSeries } from "@/lib/content";
+import { seriesLabels } from "@/lib/labels";
 
 const process = [
   {
@@ -29,31 +27,38 @@ const process = [
 
 export default function Home() {
   const latestCreations = getCreations().slice(0, 6);
+  const featured = getFeaturedSeries();
+  const t = featured && seriesLabels(featured.language);
+  const firstChapter = featured?.chapters[0];
+  // A page of the featured series illustrates the "about" section.
+  const showcasePage = firstChapter?.pages[0];
 
   return (
     <>
-      <Hero
-        kicker="Vol. 01 · AI manga showcase"
-        title={
-          <>
-            Ink, dreamed <span className="text-accent">by machines.</span>
-          </>
-        }
-        intro="Original manga artwork and stories, born from generative image AI and finished with an editor’s eye."
-        image={heroImage}
-        alt="Placeholder featured artwork: a cloaked figure raises a staff toward a giant glowing sun above a jagged ridge, with radiating speed lines."
-        caption="Featured — placeholder artwork"
-        actions={
-          <>
-            <Button href="#latest" size="lg">
-              See the creations
-            </Button>
-            <Button href="#about" variant="outline" size="lg">
-              How it’s made
-            </Button>
-          </>
-        }
-      />
+      {featured && t && (
+        <Hero
+          lang={featured.language}
+          kicker={t.featured}
+          title={featured.title}
+          subtitle={featured.subtitle}
+          intro={featured.synopsis}
+          image={featured.cover}
+          alt={featured.coverAlt}
+          href={featured.href}
+          actions={
+            <>
+              {firstChapter && (
+                <Button href={firstChapter.href} size="lg">
+                  {t.read(firstChapter.number)}
+                </Button>
+              )}
+              <Button href={featured.href} variant="outline" size="lg">
+                {t.discoverSeries}
+              </Button>
+            </>
+          }
+        />
+      )}
 
       <Section
         id="latest"
@@ -84,18 +89,22 @@ export default function Home() {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
           <figure className="relative mx-auto w-full max-w-md lg:max-w-none">
             <div className="panel relative aspect-[4/5] overflow-hidden bg-ink-800">
-              <Image
-                src={artistImage}
-                alt="Placeholder artwork standing in for the artist’s portrait: a silhouette against a red sun."
-                fill
-                sizes="(min-width: 1024px) 40vw, (min-width: 448px) 448px, 100vw"
-                placeholder="blur"
-                className="object-cover"
-              />
+              {showcasePage && (
+                <Image
+                  src={showcasePage.image}
+                  alt={showcasePage.alt}
+                  fill
+                  sizes="(min-width: 1024px) 40vw, (min-width: 448px) 448px, 100vw"
+                  placeholder="blur"
+                  className="object-cover object-top"
+                />
+              )}
             </div>
-            <figcaption className="mt-5 text-xs uppercase tracking-widest text-paper-faint">
-              Placeholder · artist portrait
-            </figcaption>
+            {featured && t && firstChapter && showcasePage && (
+              <figcaption lang={featured.language} className="mt-5 text-xs uppercase tracking-widest text-paper-faint">
+                {featured.title} · {t.chapter(firstChapter.number)}, page {showcasePage.number}
+              </figcaption>
+            )}
           </figure>
 
           <div>

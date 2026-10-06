@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
-import type { ReaderPage, ReadingDirection } from "./types";
+import { READING_QUALITY, type ReaderPage, type ReadingDirection } from "./types";
 
 const MAX_SCALE = 4;
 const DOUBLE_TAP_SCALE = 2.5;
@@ -22,6 +22,8 @@ type Gesture =
 
 type Props = {
   pages: ReaderPage[];
+  /** Accessible name of the page list, in the series language. */
+  label: string;
   /** Current page index; pages.length is the end-of-chapter screen. */
   page: number;
   onPageChange: (index: number) => void;
@@ -46,6 +48,7 @@ const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
  */
 export function MangaView({
   pages,
+  label,
   page,
   onPageChange,
   direction,
@@ -354,7 +357,7 @@ export function MangaView({
       ref={stageRef}
       role="region"
       aria-roledescription="page viewer"
-      aria-label="Chapter pages"
+      aria-label={label}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -387,6 +390,7 @@ export function MangaView({
                     preload={i === 0}
                     loading="eager"
                     placeholder="blur"
+                    quality={READING_QUALITY}
                     draggable={false}
                     sizes={`(min-aspect-ratio: ${p.image.width}/${p.image.height}) ${Math.ceil((p.image.width / p.image.height) * 100)}vh, 100vw`}
                     className="object-contain"
