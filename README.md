@@ -54,3 +54,15 @@ Don't hard-code colours or fonts in components; add a token instead.
 Everything in `public/placeholder/` is generated placeholder art (each image is stamped
 "PLACEHOLDER"). Regenerate with `node scripts/generate-placeholders.mjs`. Replace it with real
 creations by editing `src/lib/creations.ts` and the hero/about imports in `src/app/page.tsx`.
+
+## Deployment
+
+Production runs as a Docker container behind the VPS's existing Traefik (no host port).
+`next.config.ts` uses `output: "standalone"`; `GET /api/health` is the container healthcheck.
+
+- `Dockerfile` – multi-stage Node 22 image, non-root, listens on `PORT` (default 3000).
+- `docker-compose.yml` + `.env.example` – external Traefik network and Traefik v2 labels, all env-driven.
+- `.github/workflows/ci.yml` – lint, build, compose validation and `docker build` + smoke test on PRs and `main`.
+
+Content and artwork are baked into the image: a new creation is merge to `main`, then pull + rebuild
+on the server. Step-by-step guide (in French): [DEPLOY.md](DEPLOY.md).
