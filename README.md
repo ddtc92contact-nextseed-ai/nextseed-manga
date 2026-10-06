@@ -21,6 +21,7 @@ PORT=4000 npm run dev  # any port via the PORT env var
 | `npm run build` | Production build                     |
 | `npm run start` | Serve the production build (`PORT`)  |
 | `npm run lint`  | ESLint (Next.js core-web-vitals + TS) |
+| `npm test`      | Unit tests (Vitest): forms, adapters  |
 
 ## Project structure
 
@@ -29,6 +30,9 @@ src/
   app/            routes: layout (metadata, fonts), landing page, 404, icon.svg
   components/     design-system components (Header, Footer, Button, Section, ArtworkCard, Hero...)
   lib/            site config (nav, copy) and creations data
+  config/         social.ts: social network URLs + public contact email (edit me)
+  server/         server-only logic: contact (zod + SMTP), newsletter adapters, rate limiting
+  app/actions/    server actions used by the contact & newsletter forms
 public/placeholder/   PLACEHOLDER artwork (see below)
 scripts/          generate-placeholders.mjs
 ```
@@ -46,6 +50,12 @@ scripts/          generate-placeholders.mjs
   - `ArtworkCard` – 3:4 artwork panel (next/image) with title, subtitle and panel number.
   - `Hero` – full-bleed featured artwork with headline and actions.
   - `Header` (+ `MobileNav`), `Footer`, `Wordmark`, `Container`.
+  - `SocialLinks` – icon links for every network filled in `src/config/social.ts` (`size`, `showLabels`).
+  - `FormField` / `FormStatus` – labelled input/textarea with inline errors; live status message.
+  - `ContactForm` (+ `ContactFallback`), `NewsletterSignup` (`variant` `compact | panel`), `Faq`.
+
+`NewsletterSignup` is an async server component that renders nothing when no provider is configured;
+wrap it in `<Suspense>`. Use `variant="panel"` for a framed call-to-action at the end of a chapter.
 
 Don't hard-code colours or fonts in components; add a token instead.
 
@@ -54,3 +64,35 @@ Don't hard-code colours or fonts in components; add a token instead.
 Everything in `public/placeholder/` is generated placeholder art (each image is stamped
 "PLACEHOLDER"). Regenerate with `node scripts/generate-placeholders.mjs`. Replace it with real
 creations by editing `src/lib/creations.ts` and the hero/about imports in `src/app/page.tsx`.
+
+## Social links
+
+Edit `src/config/social.ts`: one URL per network (Instagram, X, TikTok, YouTube, Pixiv, Bluesky,
+Threads, Discord, Patreon). An empty string hides that network in the footer and on `/about`.
+`contactEmail` in the same file is shown when the contact form is unavailable.
+
+## Environment variables
+
+All optional; copy `.env.example` to `.env.local` for local development. They are read **at request
+time** (pages are server-rendered on the VPS), so changing them only needs a restart, not a rebuild.
+
+| Variable        | Used for                                                        | When missing                         |
+| --------------- | --------------------------------------------------------------- | ------------------------------------ |
+| `SMTP_HOST`     | Contact form: SMTP server                                       | Form replaced by an email fallback   |
+| `SMTP_PORT`     | SMTP port (`465` = TLS, otherwise STARTTLS)                     | `587`                                |
+| `SMTP_USER`     | SMTP login                                                      | No authentication                    |
+| `SMTP_PASS`     | SMTP password                                                   | —                                    |
+| `SMTP_FROM`     | Sender address of contact emails                                | `SMTP_USER`, then `CONTACT_TO`       |
+| `CONTACT_TO`    | Mailbox receiving contact messages                              | Form replaced by an email fallback   |
+| `BREVO_API_KEY` | Newsletter: Brevo API key                                       | Newsletter signup hidden             |
+| `BREVO_LIST_ID` | Newsletter: numeric id of the Brevo list to add subscribers to  | Newsletter signup hidden             |
+
+Both forms validate on the server (zod), and are rate-limited to 5 submissions per IP per 15 minutes
+(in memory, using `X-Forwarded-For` from the reverse proxy). The contact form also has a honeypot field.
+
+To try the contact form locally without a real mailbox, run a catcher such as
+[Mailpit](https://mailpit.axllent.org/) and set `SMTP_HOST=127.0.0.1`, `SMTP_PORT=1025`,
+`CONTACT_TO=you@example.test`.
+
+To swap newsletter providers, add an adapter implementing `NewsletterProvider`
+(`src/server/newsletter/types.ts`) next to `brevo.ts` and select it in `getNewsletterProvider()`.
