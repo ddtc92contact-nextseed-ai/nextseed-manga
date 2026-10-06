@@ -14,9 +14,13 @@ type ArtworkCardProps = {
   /** `sizes` attribute for next/image; defaults to a 2/3-column grid. */
   sizes?: string;
   preload?: boolean;
+  /** Width / height of the frame; defaults to a 3:4 portrait. Pass the image's own ratio for masonry layouts. */
+  ratio?: number;
+  /** Small label in the bottom-left corner, e.g. "Series". */
+  badge?: string;
 };
 
-/** Portrait (3:4) artwork tile styled as a manga panel. */
+/** Artwork tile styled as a manga panel (3:4 portrait unless `ratio` is given). */
 export function ArtworkCard({
   title,
   subtitle,
@@ -26,10 +30,15 @@ export function ArtworkCard({
   index,
   sizes = "(min-width: 768px) 33vw, 50vw",
   preload = false,
+  ratio,
+  badge,
 }: ArtworkCardProps) {
   const body = (
     <>
-      <div className="relative aspect-[3/4] overflow-hidden border-2 border-paper bg-ink-800 transition-shadow duration-200 group-hover:shadow-[6px_6px_0_0_var(--color-accent)] group-focus-visible:shadow-[6px_6px_0_0_var(--color-accent)]">
+      <div
+        style={ratio ? { aspectRatio: ratio } : undefined}
+        className="relative aspect-[3/4] overflow-hidden border-2 border-paper bg-ink-800 transition-shadow duration-200 group-hover:shadow-[6px_6px_0_0_var(--color-accent)] group-focus-visible:shadow-[6px_6px_0_0_var(--color-accent)]"
+      >
         <Image
           src={image}
           alt={alt}
@@ -45,6 +54,11 @@ export function ArtworkCard({
             className="absolute left-0 top-0 bg-paper px-2 py-1 font-display text-xs text-ink-950"
           >
             {String(index).padStart(2, "0")}
+          </span>
+        )}
+        {badge && (
+          <span className="absolute bottom-0 left-0 bg-accent px-2 py-1 text-xs font-bold uppercase tracking-wider text-ink-950">
+            {badge}
           </span>
         )}
       </div>

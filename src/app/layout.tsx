@@ -3,6 +3,7 @@ import { Dela_Gothic_One, Inter } from "next/font/google";
 
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { defaultOgImage } from "@/lib/metadata";
 import { site } from "@/lib/site";
 
 import "./globals.css";
@@ -21,6 +22,7 @@ const body = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.url),
   title: {
     default: `${site.name} — AI-generated manga showcase`,
     template: `%s · ${site.name}`,
@@ -32,7 +34,10 @@ export const metadata: Metadata = {
     description: site.description,
     siteName: site.name,
     type: "website",
+    url: "/",
+    images: [defaultOgImage],
   },
+  twitter: { card: "summary_large_image", images: [defaultOgImage] },
 };
 
 export const viewport: Viewport = {

@@ -21,17 +21,75 @@ PORT=4000 npm run dev  # any port via the PORT env var
 | `npm run build` | Production build                     |
 | `npm run start` | Serve the production build (`PORT`)  |
 | `npm run lint`  | ESLint (Next.js core-web-vitals + TS) |
+| `npm run content` | Prepare the images in `content/` (runs automatically before `dev` and `build`) |
+
+Set `SITE_URL` (e.g. `SITE_URL=https://manga.example.com npm run build`) when building for
+production: it is used for canonical URLs, Open Graph tags, `sitemap.xml` and `robots.txt`
+(defaults to `http://localhost:3000`).
 
 ## Project structure
 
 ```
+content/          the creations: series, chapters, artworks (JSON + images), see content/README.md
 src/
-  app/            routes: layout (metadata, fonts), landing page, 404, icon.svg
-  components/     design-system components (Header, Footer, Button, Section, ArtworkCard, Hero...)
-  lib/            site config (nav, copy) and creations data
-public/placeholder/   PLACEHOLDER artwork (see below)
-scripts/          generate-placeholders.mjs
+  app/            routes: /, /gallery, /gallery/tags/[tag], /series/[slug], /series/[slug]/[chapter],
+                  /artworks/[slug], opengraph-image routes, sitemap.ts, robots.ts, 404
+  components/     design-system components (Header, Footer, Button, Section, ArtworkCard, Gallery...)
+  lib/content/    build-time data layer: zod schemas + loader for content/
+  lib/            site config, SEO metadata helper, Open Graph renderer
+public/placeholder/   PLACEHOLDER hero / artist artwork (see below)
+scripts/          sync-content-images.mjs (image pipeline), generate-placeholders.mjs
 ```
+
+## How to add a creation
+
+No code change is needed: drop files in `content/`, open a PR, and the new creation appears in
+`/gallery`, on the landing page, in the sitemap and on its own page after the next build.
+The full format is documented in [`content/README.md`](content/README.md).
+
+**A standalone artwork**
+
+1. Create `content/artworks/<slug>/` (lowercase kebab-case, it becomes `/artworks/<slug>`).
+2. Put the image in it (e.g. `image.webp`, full resolution is fine).
+3. Add `artwork.json`:
+   ```json
+   {
+     "title": "My Artwork",
+     "description": "One or two sentences.",
+     "image": "image.webp",
+     "alt": "What the image shows.",
+     "date": "2026-10-06",
+     "tags": ["fantasy"],
+     "aiTools": ["Midjourney v7"]
+   }
+   ```
+
+**A series / a new chapter**
+
+1. Create `content/series/<slug>/` with `cover.webp` and `series.json` (title, synopsis, cover,
+   coverAlt, tags, status, date; optional aiTools and readingMode).
+2. For each chapter, create `content/series/<slug>/chapters/<NN>/` with a `chapter.json`
+   (`{ "number": 1, "title": "…", "date": "YYYY-MM-DD" }`) and the pages named `01.webp`,
+   `02.webp`… (read in file-name order).
+
+**Check it**
+
+```bash
+npm run dev      # then open /gallery; after adding files while dev is running, run `npm run content`
+npm run build    # fails with a message naming the file and field if a metadata file is invalid
+```
+
+## Images and SEO
+
+- `scripts/sync-content-images.mjs` copies the content images to `public/content/` (git-ignored)
+  with a content hash in the file name, scales down originals wider than 2000 px, and records
+  their size and a tiny blur placeholder. Every image goes through `next/image` with a `sizes`
+  attribute, a blur placeholder and AVIF/WebP output, so phones never download the original.
+- Every page has its own title, description, canonical URL and Open Graph / Twitter card.
+  Artworks and series get a 1200×630 card rendered at build time from their image
+  (`opengraph-image.ts`); other pages use `public/og-default.jpg`.
+- `/sitemap.xml` lists every page (gallery, tag pages, series, chapters, artworks);
+  `/robots.txt` allows everything and points to it.
 
 ## Design system
 
@@ -51,9 +109,11 @@ Don't hard-code colours or fonts in components; add a token instead.
 
 ## Placeholder artwork
 
-Everything in `public/placeholder/` is generated placeholder art (each image is stamped
-"PLACEHOLDER"). Regenerate with `node scripts/generate-placeholders.mjs`. Replace it with real
-creations by editing `src/lib/creations.ts` and the hero/about imports in `src/app/page.tsx`.
+Everything in `public/placeholder/`, `public/og-default.jpg` and the example creations in
+`content/` are generated placeholder art (each image is stamped "PLACEHOLDER"). Regenerate
+with `node scripts/generate-placeholders.mjs`. Replace the examples by adding real creations
+to `content/` (and deleting the placeholder folders); the hero/about images are imported in
+`src/app/page.tsx`.
 
 ## Deployment
 

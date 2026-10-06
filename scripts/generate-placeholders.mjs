@@ -1,11 +1,12 @@
-// Generates the PLACEHOLDER artwork in public/placeholder/.
+// Generates the PLACEHOLDER artwork in public/placeholder/ (site chrome: hero, artist portrait)
+// and the example creations in content/ (see content/README.md).
 // These images stand in for the real AI-generated manga pages until they are added.
 // Usage: node scripts/generate-placeholders.mjs   (uses sharp, installed with next)
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
-const OUT = path.join(process.cwd(), "public", "placeholder");
+const ROOT = process.cwd();
 
 // Deterministic PRNG so the output is stable between runs.
 function rng(seed) {
@@ -96,20 +97,37 @@ function art({ w, h, seed, hue, title, layout }) {
 }
 
 const images = [
-  { file: "hero.webp", w: 2400, h: 1350, seed: 7, hue: 350, title: "Featured artwork", layout: "hero" },
-  { file: "creation-01.webp", w: 1200, h: 1600, seed: 11, hue: 220, title: "Creation 01" },
-  { file: "creation-02.webp", w: 1200, h: 1600, seed: 23, hue: 280, title: "Creation 02" },
-  { file: "creation-03.webp", w: 1200, h: 1600, seed: 37, hue: 10, title: "Creation 03" },
-  { file: "creation-04.webp", w: 1200, h: 1600, seed: 41, hue: 170, title: "Creation 04" },
-  { file: "creation-05.webp", w: 1200, h: 1600, seed: 53, hue: 30, title: "Creation 05" },
-  { file: "creation-06.webp", w: 1200, h: 1600, seed: 67, hue: 250, title: "Creation 06" },
-  { file: "artist.webp", w: 1200, h: 1500, seed: 79, hue: 0, title: "About the artist" },
+  { file: "public/placeholder/hero.webp", w: 2400, h: 1350, seed: 7, hue: 350, title: "Featured artwork", layout: "hero" },
+  { file: "public/placeholder/artist.webp", w: 1200, h: 1500, seed: 79, hue: 0, title: "About the artist" },
+  // Example series.
+  { file: "content/series/blue-hour-ronin/cover.webp", w: 1200, h: 1600, seed: 11, hue: 220, title: "Blue Hour Ronin · cover" },
+  { file: "content/series/blue-hour-ronin/chapters/01/01.webp", w: 1000, h: 1414, seed: 101, hue: 215, title: "Blue Hour Ronin · Ch.1 · p.1" },
+  { file: "content/series/blue-hour-ronin/chapters/01/02.webp", w: 1000, h: 1414, seed: 102, hue: 225, title: "Blue Hour Ronin · Ch.1 · p.2" },
+  { file: "content/series/blue-hour-ronin/chapters/01/03.webp", w: 1000, h: 1414, seed: 103, hue: 235, title: "Blue Hour Ronin · Ch.1 · p.3" },
+  { file: "content/series/blue-hour-ronin/chapters/02/01.webp", w: 1000, h: 1414, seed: 104, hue: 200, title: "Blue Hour Ronin · Ch.2 · p.1" },
+  { file: "content/series/blue-hour-ronin/chapters/02/02.webp", w: 1000, h: 1414, seed: 105, hue: 190, title: "Blue Hour Ronin · Ch.2 · p.2" },
+  { file: "content/series/ember-gate/cover.webp", w: 1200, h: 1600, seed: 37, hue: 10, title: "Ember Gate · cover" },
+  { file: "content/series/ember-gate/chapters/01/01.webp", w: 1000, h: 1414, seed: 106, hue: 15, title: "Ember Gate · Ch.1 · p.1" },
+  { file: "content/series/ember-gate/chapters/01/02.webp", w: 1000, h: 1414, seed: 107, hue: 25, title: "Ember Gate · Ch.1 · p.2" },
+  // Example standalone artworks.
+  { file: "content/artworks/violet-signal/image.webp", w: 1200, h: 1600, seed: 23, hue: 280, title: "Violet Signal" },
+  { file: "content/artworks/tidewatcher/image.webp", w: 1200, h: 1600, seed: 41, hue: 170, title: "Tidewatcher" },
+  { file: "content/artworks/amber-wanderer/image.webp", w: 1600, h: 1200, seed: 53, hue: 30, title: "Amber Wanderer" },
+  { file: "content/artworks/night-courier/image.webp", w: 1200, h: 1800, seed: 67, hue: 250, title: "Night Courier" },
 ];
 
-await mkdir(OUT, { recursive: true });
 for (const img of images) {
+  const out = path.join(ROOT, img.file);
+  await mkdir(path.dirname(out), { recursive: true });
   await sharp(Buffer.from(art(img)))
     .webp({ quality: 78 })
-    .toFile(path.join(OUT, img.file));
+    .toFile(out);
   console.log("wrote", img.file);
 }
+
+// Default Open Graph card (1200×630) for pages without an image of their own.
+await sharp(path.join(ROOT, "public/placeholder/hero.webp"))
+  .resize(1200, 630, { fit: "cover", position: "right" })
+  .jpeg({ quality: 82, mozjpeg: true })
+  .toFile(path.join(ROOT, "public/og-default.jpg"));
+console.log("wrote public/og-default.jpg");

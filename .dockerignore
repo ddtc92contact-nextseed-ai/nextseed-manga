@@ -18,3 +18,6 @@ npm-debug.log*
 .DS_Store
 *.pem
 *.tsbuildinfo
+# Generated from content/ during the build (scripts/sync-content-images.mjs).
+public/content
+.content-cache

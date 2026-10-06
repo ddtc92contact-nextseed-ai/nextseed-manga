@@ -1,0 +1,9 @@
+{
+  "title": "Tidewatcher",
+  "description": "PLACEHOLDER artwork. A keeper of the tides raises her staff as the teal sun rises from the sea.",
+  "image": "image.webp",
+  "alt": "Placeholder artwork: a figure raises a staff toward a teal sun, speed lines radiating outward.",
+  "date": "2026-09-10",
+  "tags": ["fantasy", "placeholder"],
+  "aiTools": ["FLUX.1", "Krita"]
+}
