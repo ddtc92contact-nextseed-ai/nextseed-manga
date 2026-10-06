@@ -40,7 +40,6 @@ export function Footer() {
       <div className="border-t border-ink-700">
         <Container className="flex flex-col gap-2 py-6 text-xs text-paper-faint sm:flex-row sm:justify-between">
           <p>© {year} NextSeed-AI. All artwork generated with AI and curated by hand.</p>
-          <p>Artwork currently shown is placeholder content.</p>
         </Container>
       </div>
     </footer>

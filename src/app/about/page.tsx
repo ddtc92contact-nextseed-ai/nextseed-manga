@@ -10,9 +10,8 @@ import { Faq } from "@/components/Faq";
 import { Section } from "@/components/Section";
 import { SocialLinks } from "@/components/SocialLinks";
 import { getSocialLinks } from "@/config/social";
+import { getFeaturedSeries } from "@/lib/content";
 import { getSmtpConfig } from "@/server/contact";
-
-import artistImage from "../../../public/placeholder/artist.webp";
 
 export const metadata: Metadata = {
   title: "About & contact",
@@ -68,6 +67,7 @@ const faq = [
 ] as const;
 
 export default function AboutPage() {
+  const featured = getFeaturedSeries();
   return (
     <>
       <section
@@ -100,20 +100,24 @@ export default function AboutPage() {
 
           <figure className="relative mx-auto w-full max-w-md lg:max-w-none">
             <div className="panel relative aspect-[4/5] overflow-hidden bg-ink-800">
-              {/* TODO(manager): swap for your portrait or a signature visual. */}
-              <Image
-                src={artistImage}
-                alt="Placeholder artwork standing in for the artist’s portrait: a silhouette against a red sun."
-                fill
-                preload
-                sizes="(min-width: 1408px) 600px, (min-width: 1024px) 42vw, (min-width: 448px) 448px, 100vw"
-                placeholder="blur"
-                className="object-cover"
-              />
+              {/* TODO(manager): swap for your portrait or a signature visual (currently the latest series cover). */}
+              {featured && (
+                <Image
+                  src={featured.cover}
+                  alt={featured.coverAlt}
+                  fill
+                  preload
+                  sizes="(min-width: 1408px) 600px, (min-width: 1024px) 42vw, (min-width: 448px) 448px, 100vw"
+                  placeholder="blur"
+                  className="object-cover object-top"
+                />
+              )}
             </div>
-            <figcaption className="mt-5 text-xs uppercase tracking-widest text-paper-faint">
-              Placeholder · artist portrait
-            </figcaption>
+            {featured && (
+              <figcaption lang={featured.language} className="mt-5 text-xs uppercase tracking-widest text-paper-faint">
+                {featured.subtitle ? `${featured.title} — ${featured.subtitle}` : featured.title}
+              </figcaption>
+            )}
           </figure>
         </Container>
       </section>

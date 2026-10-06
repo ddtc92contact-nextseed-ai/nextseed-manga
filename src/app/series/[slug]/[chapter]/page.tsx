@@ -6,6 +6,7 @@ import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Container } from "@/components/Container";
 import { PrevNext } from "@/components/PrevNext";
 import { getChapter, getSeries } from "@/lib/content";
+import { seriesLabels } from "@/lib/labels";
 import { ogImageUrl, pageMetadata } from "@/lib/metadata";
 
 /*
@@ -14,6 +15,9 @@ import { ogImageUrl, pageMetadata } from "@/lib/metadata";
  */
 
 export const dynamicParams = false;
+
+/** Higher than the site default (75) so lettering in speech bubbles stays crisp. */
+const readingQuality = 90;
 
 export function generateStaticParams() {
   return getSeries().flatMap((series) =>
@@ -28,9 +32,10 @@ export async function generateMetadata({
   const found = getChapter(slug, chapterSlug);
   if (!found) return {};
   const { series, chapter } = found;
+  const t = seriesLabels(series.language);
   return pageMetadata({
-    title: `${series.title} · Chapter ${chapter.number}: ${chapter.title}`,
-    description: chapter.summary ?? `Read chapter ${chapter.number} of ${series.title}. ${series.synopsis}`,
+    title: `${series.title} · ${t.chapter(chapter.number)} — ${chapter.title}`,
+    description: chapter.summary ?? `${t.readDescription(chapter.number, series.title)} ${series.synopsis}`,
     path: chapter.href,
     image: { url: ogImageUrl(series.href), alt: series.coverAlt },
     type: "article",
@@ -42,20 +47,21 @@ export default async function ChapterPage({ params }: PageProps<"/series/[slug]/
   const found = getChapter(slug, chapterSlug);
   if (!found) notFound();
   const { series, chapter, previous, next } = found;
+  const t = seriesLabels(series.language);
 
   return (
-    <article className="py-12 lg:py-16">
+    <article lang={series.language} className="py-12 lg:py-16">
       <Container>
         <Breadcrumbs
           items={[
-            { label: "Gallery", href: "/gallery" },
+            { label: t.gallery, href: "/gallery" },
             { label: series.title, href: series.href },
-            { label: `Chapter ${chapter.number}` },
+            { label: t.chapter(chapter.number) },
           ]}
         />
         <header className="mb-10 text-center">
           <p className="text-xs font-semibold uppercase tracking-kicker text-accent">
-            Chapter {chapter.number}
+            {t.chapter(chapter.number)}
           </p>
           <h1 className="mt-3 font-display text-display-sm">{chapter.title}</h1>
         </header>
@@ -68,6 +74,7 @@ export default async function ChapterPage({ params }: PageProps<"/series/[slug]/
                 alt={page.alt}
                 preload={i === 0}
                 placeholder="blur"
+                quality={readingQuality}
                 sizes="(min-width: 816px) 768px, calc(100vw - 2rem)"
                 className="h-auto w-full"
               />
@@ -76,13 +83,13 @@ export default async function ChapterPage({ params }: PageProps<"/series/[slug]/
         </ol>
 
         <PrevNext
-          label="Chapters"
+          label={t.chapters}
           previous={
             previous && {
               href: previous.href,
               title: previous.title,
               image: previous.pages[0].image,
-              label: `← Chapter ${previous.number}`,
+              label: `← ${t.chapter(previous.number)}`,
             }
           }
           next={
@@ -91,9 +98,9 @@ export default async function ChapterPage({ params }: PageProps<"/series/[slug]/
                   href: next.href,
                   title: next.title,
                   image: next.pages[0].image,
-                  label: `Chapter ${next.number} →`,
+                  label: `${t.chapter(next.number)} →`,
                 }
-              : { href: series.href, title: series.title, image: series.cover, label: "Back to the series" }
+              : { href: series.href, title: series.title, image: series.cover, label: t.backToSeries }
           }
         />
       </Container>
