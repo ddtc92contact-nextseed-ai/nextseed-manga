@@ -353,8 +353,8 @@ export function MangaView({
     <div
       ref={stageRef}
       role="region"
-      aria-roledescription="page viewer"
-      aria-label="Chapter pages"
+      aria-roledescription="visionneuse de pages"
+      aria-label="Pages du chapitre"
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

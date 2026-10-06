@@ -25,7 +25,7 @@ export function MobileNav({ items }: { items: readonly NavItem[] }) {
         onClick={() => setOpen((v) => !v)}
         className="grid size-11 place-items-center border-2 border-paper text-paper"
       >
-        <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
+        <span className="sr-only">{open ? "Fermer le menu" : "Ouvrir le menu"}</span>
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2.5">
           {open ? (
             <path d="M5 5l14 14M19 5L5 19" />
@@ -36,7 +36,7 @@ export function MobileNav({ items }: { items: readonly NavItem[] }) {
       </button>
       <nav
         id={menuId}
-        aria-label="Primary"
+        aria-label="Navigation principale"
         hidden={!open}
         className="absolute inset-x-0 top-16 border-b border-ink-700 bg-ink-950 bg-screentone"
       >

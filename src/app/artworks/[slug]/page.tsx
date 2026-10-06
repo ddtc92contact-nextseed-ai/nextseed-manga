@@ -38,7 +38,7 @@ export default async function ArtworkPage({ params }: PageProps<"/artworks/[slug
     <article className="py-12 lg:py-16">
       <Container>
         <Breadcrumbs
-          items={[{ label: "Gallery", href: "/gallery" }, { label: "Artworks" }, { label: artwork.title }]}
+          items={[{ label: "Galerie", href: "/gallery" }, { label: "Illustrations" }, { label: artwork.title }]}
         />
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:gap-14">
           <figure className="flex justify-center bg-ink-900 p-2 sm:p-4">
@@ -53,18 +53,18 @@ export default async function ArtworkPage({ params }: PageProps<"/artworks/[slug
           </figure>
 
           <div className="lg:sticky lg:top-24 lg:self-start">
-            <p className="text-xs font-semibold uppercase tracking-kicker text-accent">Artwork</p>
+            <p className="text-xs font-semibold uppercase tracking-kicker text-accent">Illustration</p>
             <h1 className="mt-3 font-display text-display-sm hyphens-auto [overflow-wrap:anywhere] lg:text-[2.75rem]">{artwork.title}</h1>
             <p className="mt-6 text-lg leading-relaxed text-paper-muted">{artwork.description}</p>
             <div className="mt-8">
               <DetailList
                 items={[
                   {
-                    label: "Published",
+                    label: "Publiée le",
                     value: <time dateTime={artwork.date}>{formatDate(artwork.date)}</time>,
                   },
                   ...(artwork.aiTools.length > 0
-                    ? [{ label: "Made with", value: artwork.aiTools.join(", ") }]
+                    ? [{ label: "Réalisée avec", value: artwork.aiTools.join(", ") }]
                     : []),
                 ]}
               />
@@ -74,11 +74,11 @@ export default async function ArtworkPage({ params }: PageProps<"/artworks/[slug
         </div>
 
         <PrevNext
-          label="More artworks"
+          label="Autres illustrations"
           previous={
-            previous && { href: previous.href, title: previous.title, image: previous.image, label: "← Newer" }
+            previous && { href: previous.href, title: previous.title, image: previous.image, label: "← Plus récente" }
           }
-          next={next && { href: next.href, title: next.title, image: next.image, label: "Older →" }}
+          next={next && { href: next.href, title: next.title, image: next.image, label: "Plus ancienne →" }}
         />
       </Container>
     </article>

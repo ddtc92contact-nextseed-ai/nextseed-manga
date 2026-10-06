@@ -1,8 +1,8 @@
 {
   "title": "Amber Wanderer",
-  "description": "PLACEHOLDER artwork, landscape format. A traveller crosses the ridge under a warm amber sun.",
+  "description": "Illustration PROVISOIRE, format paysage. Un voyageur franchit la crête sous un chaud soleil ambré.",
   "image": "image.webp",
-  "alt": "Placeholder artwork: a silhouette crosses a ridge under a warm amber sun and dotted sky.",
+  "alt": "Illustration provisoire : une silhouette traverse une crête sous un soleil ambré et un ciel tramé de points.",
   "date": "2026-08-30",
-  "tags": ["landscape", "placeholder"]
+  "tags": ["paysage", "provisoire"]
 }

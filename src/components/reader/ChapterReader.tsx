@@ -111,7 +111,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
 
   const end = <ChapterEnd series={series} chapter={chapter} next={next} />;
   const visible = chromeVisible || atEnd;
-  const counter = atEnd ? "End" : `${page + 1} / ${total}`;
+  const counter = atEnd ? "Fin" : `${page + 1} / ${total}`;
 
   /* ----------------------------------------------------------------- render */
 
@@ -144,7 +144,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
       )}
 
       <p aria-live="polite" className="sr-only">
-        {atEnd ? `End of chapter ${chapter.number}` : `Page ${page + 1} of ${total}`}
+        {atEnd ? `Fin du chapitre ${chapter.number}` : `Page ${page + 1} sur ${total}`}
       </p>
 
       <div ref={chromeRef} onFocus={showChrome}>
@@ -154,7 +154,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
           <div className="mx-auto flex h-14 max-w-site items-center gap-3 px-gutter lg:px-gutter-lg">
             <Link
               href={series.href}
-              aria-label={`Back to ${series.title}`}
+              aria-label={`Retour à ${series.title}`}
               className="-ml-2 flex size-11 shrink-0 items-center justify-center text-xl text-paper-muted transition-colors hover:text-accent"
             >
               <span aria-hidden="true">←</span>
@@ -164,10 +164,10 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
                 {series.title}
               </span>
               <span className="block truncate font-display text-sm sm:text-base">
-                Ch. {chapter.number} · {chapter.title}
+                Chap. {chapter.number} · {chapter.title}
               </span>
             </h1>
-            <div role="group" aria-label="Reading mode" className="flex shrink-0 border-2 border-paper">
+            <div role="group" aria-label="Mode de lecture" className="flex shrink-0 border-2 border-paper">
               {readingModes.map((m) => (
                 <button
                   key={m}
@@ -186,7 +186,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
         </header>
 
         <nav
-          aria-label="Reader"
+          aria-label="Navigation du lecteur"
           className={`fixed inset-x-0 bottom-0 z-50 border-t border-ink-700 bg-ink-950/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md ease-out motion-safe:transition-transform motion-safe:duration-300 ${visible ? "" : "translate-y-full"}`}
         >
           <div aria-hidden="true" className="h-1 bg-ink-700">
@@ -197,13 +197,13 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
           </div>
           <div className="mx-auto grid h-14 max-w-site grid-cols-[1fr_auto_1fr] items-center gap-2 px-gutter lg:px-gutter-lg">
             <div className="flex justify-start">
-              <ChapterLink target={previous} label="Previous chapter" prefix="←" />
+              <ChapterLink target={previous} label="Chapitre précédent" prefix="←" />
             </div>
 
             <div className="flex items-center gap-1">
               {mode === "manga" && (
                 <PageButton
-                  label={rtl ? "Next page" : "Previous page"}
+                  label={rtl ? "Page suivante" : "Page précédente"}
                   disabled={rtl ? atEnd : page === 0}
                   onClick={() => setPage((p) => Math.min(total, Math.max(0, p + (rtl ? 1 : -1))))}
                 >
@@ -215,7 +215,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
               </span>
               {mode === "manga" && (
                 <PageButton
-                  label={rtl ? "Previous page" : "Next page"}
+                  label={rtl ? "Page précédente" : "Page suivante"}
                   disabled={rtl ? page === 0 : atEnd}
                   onClick={() => setPage((p) => Math.min(total, Math.max(0, p + (rtl ? -1 : 1))))}
                 >
@@ -226,17 +226,17 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
                 <button
                   type="button"
                   onClick={() => setDirection(direction === "rtl" ? "ltr" : "rtl")}
-                  aria-label={`Reading direction: ${direction === "rtl" ? "right to left" : "left to right"}. Switch.`}
-                  title="Switch reading direction"
+                  aria-label={`Sens de lecture\u00a0: ${direction === "rtl" ? "de droite à gauche" : "de gauche à droite"}. Changer.`}
+                  title="Changer le sens de lecture"
                   className="ml-1 min-h-9 border border-ink-600 px-2 text-xs font-semibold uppercase tracking-wider text-paper-muted transition-colors hover:border-paper hover:text-paper"
                 >
-                  {direction === "rtl" ? "RTL" : "LTR"}
+                  {direction === "rtl" ? "D → G" : "G → D"}
                 </button>
               )}
             </div>
 
             <div className="flex justify-end">
-              <ChapterLink target={next} label="Next chapter" suffix="→" />
+              <ChapterLink target={next} label="Chapitre suivant" suffix="→" />
             </div>
           </div>
         </nav>
@@ -260,8 +260,8 @@ function ChapterLink({
     <>
       {prefix && <span aria-hidden="true">{prefix}</span>}
       <span>
-        <span className="sm:hidden">Ch. {target?.number ?? "—"}</span>
-        <span className="hidden sm:inline">{target ? `Ch. ${target.number}` : label}</span>
+        <span className="sm:hidden">Chap. {target?.number ?? "—"}</span>
+        <span className="hidden sm:inline">{target ? `Chap. ${target.number}` : label}</span>
       </span>
       {suffix && <span aria-hidden="true">{suffix}</span>}
     </>
@@ -277,7 +277,7 @@ function ChapterLink({
   return (
     <Link
       href={target.href}
-      aria-label={`${label}: chapter ${target.number}, ${target.title}`}
+      aria-label={`${label}\u00a0: chapitre ${target.number}, ${target.title}`}
       title={target.title}
       className={`${classes} text-paper-muted transition-colors hover:text-accent`}
     >

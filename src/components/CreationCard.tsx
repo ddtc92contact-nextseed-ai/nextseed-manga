@@ -1,5 +1,5 @@
 import { type Creation, creationImage } from "@/lib/content";
-import { plural } from "@/lib/format";
+import { plural, seriesStatusLabel } from "@/lib/format";
 
 import { ArtworkCard } from "./ArtworkCard";
 
@@ -18,8 +18,8 @@ export function CreationCard({ creation, sizes, index, naturalRatio, preload }: 
   const year = creation.date.slice(0, 4);
   const subtitle =
     creation.kind === "series"
-      ? `${plural(creation.chapters.length, "chapter")} · ${creation.status}`
-      : `Artwork · ${year}`;
+      ? `${plural(creation.chapters.length, "chapitre")} · ${seriesStatusLabel[creation.status]}`
+      : `Illustration · ${year}`;
 
   return (
     <ArtworkCard
@@ -32,7 +32,7 @@ export function CreationCard({ creation, sizes, index, naturalRatio, preload }: 
       sizes={sizes}
       preload={preload}
       ratio={naturalRatio ? image.width / image.height : undefined}
-      badge={creation.kind === "series" ? "Series" : undefined}
+      badge={creation.kind === "series" ? "Série" : undefined}
     />
   );
 }

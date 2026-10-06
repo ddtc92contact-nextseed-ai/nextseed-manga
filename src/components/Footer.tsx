@@ -22,7 +22,7 @@ export function Footer() {
         <Suspense>
           <NewsletterSignup className="max-w-md" />
         </Suspense>
-        <nav aria-label="Footer" className="md:col-span-2 lg:col-span-1">
+        <nav aria-label="Pied de page" className="md:col-span-2 lg:col-span-1">
           <ul className="flex flex-wrap gap-x-8 gap-y-3 lg:flex-col lg:items-end">
             {site.nav.map((item) => (
               <li key={item.href}>
@@ -39,8 +39,8 @@ export function Footer() {
       </Container>
       <div className="border-t border-ink-700">
         <Container className="flex flex-col gap-2 py-6 text-xs text-paper-faint sm:flex-row sm:justify-between">
-          <p>© {year} NextSeed-AI. All artwork generated with AI and curated by hand.</p>
-          <p>Artwork currently shown is placeholder content.</p>
+          <p>© {year} NextSeed-AI. Illustrations générées par IA, sélectionnées à la main.</p>
+          <p>Les illustrations affichées sont, pour l’instant, provisoires.</p>
         </Container>
       </div>
     </footer>

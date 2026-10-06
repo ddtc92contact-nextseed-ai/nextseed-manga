@@ -22,8 +22,8 @@ export async function generateMetadata({
   if (!found) return {};
   const { series, chapter } = found;
   return pageMetadata({
-    title: `${series.title} · Chapter ${chapter.number}: ${chapter.title}`,
-    description: chapter.summary ?? `Read chapter ${chapter.number} of ${series.title}. ${series.synopsis}`,
+    title: `${series.title} · Chapitre ${chapter.number}\u00a0: ${chapter.title}`,
+    description: chapter.summary ?? `Lisez le chapitre ${chapter.number} de ${series.title}. ${series.synopsis}`,
     path: chapter.href,
     image: { url: ogImageUrl(series.href), alt: series.coverAlt },
     type: "article",

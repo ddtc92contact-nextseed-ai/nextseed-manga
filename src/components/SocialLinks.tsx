@@ -28,7 +28,7 @@ export function SocialLinks({ size = "sm", showLabels = false, className = "" }:
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={showLabels ? undefined : `${label} (opens in a new tab)`}
+            aria-label={showLabels ? undefined : `${label} (s’ouvre dans un nouvel onglet)`}
             className={`inline-flex items-center justify-center gap-2.5 border-2 border-ink-600 text-paper-muted transition-colors hover:border-accent hover:text-accent ${s.link}`}
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" className={`shrink-0 fill-current ${s.icon}`}>
@@ -37,7 +37,7 @@ export function SocialLinks({ size = "sm", showLabels = false, className = "" }:
             {showLabels && (
               <span className="pr-1 text-sm font-semibold uppercase tracking-widest">
                 {label}
-                <span className="sr-only"> (opens in a new tab)</span>
+                <span className="sr-only"> (s’ouvre dans un nouvel onglet)</span>
               </span>
             )}
           </a>

@@ -40,6 +40,7 @@ export function pageMetadata({
       description,
       url: path,
       siteName: site.name,
+      locale: "fr_FR",
       type,
       images,
     },

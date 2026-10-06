@@ -105,7 +105,7 @@ export function WebtoonView({
     <div className="pt-14">
       <ol
         ref={listRef}
-        aria-label="Chapter pages"
+        aria-label="Pages du chapitre"
         onClick={onTap}
         className="mx-auto flex max-w-3xl list-none flex-col"
       >

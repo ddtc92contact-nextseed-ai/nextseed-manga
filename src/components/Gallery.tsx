@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { getCreations, getTags } from "@/lib/content";
+import { plural } from "@/lib/format";
 
 import { CreationCard } from "./CreationCard";
 import { Section } from "./Section";
@@ -21,17 +22,17 @@ export function Gallery({ tag }: GalleryProps) {
 
   return (
     <Section
-      kicker={tag ? "Gallery · filtered" : "The archive"}
-      title={tag ? `#${tag}` : "Gallery"}
+      kicker={tag ? "Galerie · filtrée" : "Les archives"}
+      title={tag ? `#${tag}` : "Galerie"}
       intro={
         tag
-          ? `${creations.length} creation${creations.length === 1 ? "" : "s"} tagged “${tag}”.`
-          : "Every standalone artwork and manga series, newest first."
+          ? `${plural(creations.length, "création")} avec le tag «\u00a0${tag}\u00a0».`
+          : "Toutes les illustrations et séries manga, des plus récentes aux plus anciennes."
       }
       id="gallery"
       headingLevel="h1"
     >
-      <nav aria-label="Filter by tag" className="mb-10 md:mb-14">
+      <nav aria-label="Filtrer par tag" className="mb-10 md:mb-14">
         <ul className="flex flex-wrap gap-2 sm:gap-3">
           {filters.map((filter) => {
             const active = filter.tag === tag;
@@ -46,7 +47,7 @@ export function Gallery({ tag }: GalleryProps) {
                       : "border-ink-600 text-paper-muted hover:border-paper hover:text-paper"
                   }`}
                 >
-                  {filter.tag ? `#${filter.tag}` : "All"}
+                  {filter.tag ? `#${filter.tag}` : "Tout"}
                   <span className={active ? "text-ink-900" : "text-paper-faint"}>{filter.count}</span>
                 </Link>
               </li>
@@ -55,7 +56,7 @@ export function Gallery({ tag }: GalleryProps) {
         </ul>
       </nav>
 
-      <h2 className="sr-only">Creations</h2>
+      <h2 className="sr-only">Créations</h2>
       <ul className="columns-2 gap-4 sm:gap-6 md:columns-3 lg:gap-8 xl:columns-4">
         {creations.map((creation, i) => (
           <li key={creation.href} className="mb-8 break-inside-avoid lg:mb-12">

@@ -9,7 +9,7 @@ import { Container } from "@/components/Container";
 import { DetailList } from "@/components/DetailList";
 import { TagList } from "@/components/TagList";
 import { getSeries, getSeriesBySlug } from "@/lib/content";
-import { formatDate, plural } from "@/lib/format";
+import { formatDate, plural, seriesStatusLabel } from "@/lib/format";
 import { ogImageUrl, pageMetadata } from "@/lib/metadata";
 
 export const dynamicParams = false;
@@ -29,8 +29,6 @@ export async function generateMetadata({ params }: PageProps<"/series/[slug]">):
   });
 }
 
-const statusLabel = { ongoing: "Ongoing", completed: "Completed", hiatus: "On hiatus" } as const;
-
 export default async function SeriesPage({ params }: PageProps<"/series/[slug]">) {
   const series = getSeriesBySlug((await params).slug);
   if (!series) notFound();
@@ -40,7 +38,7 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
     <article className="py-12 lg:py-16">
       <Container>
         <Breadcrumbs
-          items={[{ label: "Gallery", href: "/gallery" }, { label: "Series" }, { label: series.title }]}
+          items={[{ label: "Galerie", href: "/gallery" }, { label: "Séries" }, { label: series.title }]}
         />
         <div className="grid gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
           <div className="panel relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden bg-ink-800 md:max-w-none md:self-start">
@@ -57,31 +55,31 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-kicker text-accent">
-              Series · {statusLabel[series.status]}
+              Série · {seriesStatusLabel[series.status]}
             </p>
             <h1 className="mt-3 font-display text-display hyphens-auto [overflow-wrap:anywhere]">{series.title}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-paper-muted">{series.synopsis}</p>
             {first && (
               <div className="mt-8">
                 <Button href={first.href} size="lg">
-                  Start reading
+                  Commencer la lecture
                 </Button>
               </div>
             )}
             <div className="mt-10 max-w-xl">
               <DetailList
                 items={[
-                  { label: "Chapters", value: series.chapters.length },
+                  { label: "Chapitres", value: series.chapters.length },
                   {
-                    label: "Started",
+                    label: "Débutée le",
                     value: <time dateTime={series.date}>{formatDate(series.date)}</time>,
                   },
                   {
-                    label: "Updated",
+                    label: "Mise à jour",
                     value: <time dateTime={series.updated}>{formatDate(series.updated)}</time>,
                   },
                   ...(series.aiTools.length > 0
-                    ? [{ label: "Made with", value: series.aiTools.join(", ") }]
+                    ? [{ label: "Réalisée avec", value: series.aiTools.join(", ") }]
                     : []),
                 ]}
               />
@@ -92,10 +90,10 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
 
         <section aria-labelledby="chapters-title" className="mt-16 lg:mt-24">
           <h2 id="chapters-title" className="font-display text-display-sm">
-            Chapters
+            Chapitres
           </h2>
           {series.chapters.length === 0 ? (
-            <p className="mt-6 text-paper-muted">The first chapter is still being inked.</p>
+            <p className="mt-6 text-paper-muted">Le premier chapitre est encore à l’encrage.</p>
           ) : (
             <ol className="mt-8 divide-y divide-ink-700 border-y border-ink-700">
               {series.chapters.map((chapter) => (
@@ -130,7 +128,7 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
                       </span>
                     </span>
                     <span className="hidden shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-paper-faint group-hover:text-accent sm:flex">
-                      Read <span aria-hidden="true" className="font-display text-xl">→</span>
+                      Lire <span aria-hidden="true" className="font-display text-xl">→</span>
                     </span>
                   </Link>
                 </li>

@@ -2,9 +2,9 @@ import { Gallery } from "@/components/Gallery";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
-  title: "Gallery",
+  title: "Galerie",
   description:
-    "Browse every AI-generated manga artwork and series from NextSeed Manga, filterable by tag.",
+    "Toutes les illustrations et séries manga générées par IA de NextSeed Manga, à filtrer par tag.",
   path: "/gallery",
 });
 

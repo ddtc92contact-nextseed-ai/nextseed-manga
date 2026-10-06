@@ -215,7 +215,7 @@ class Loader {
       const pages = pageFiles.flatMap((name, i): ChapterPage[] => {
         const image = this.image(file, name);
         return image
-          ? [{ number: i + 1, image, alt: `${seriesTitle}, chapter ${meta.number}, page ${i + 1}` }]
+          ? [{ number: i + 1, image, alt: `${seriesTitle}, chapitre ${meta.number}, page ${i + 1}` }]
           : [];
       });
 

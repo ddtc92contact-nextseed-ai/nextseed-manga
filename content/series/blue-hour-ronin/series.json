@@ -1,9 +1,9 @@
 {
   "title": "Blue Hour Ronin",
-  "synopsis": "PLACEHOLDER series. A masterless swordsman walks the ridgelines at dusk, hunting the sun that refuses to set. Each chapter follows one evening of the endless blue hour.",
+  "synopsis": "Série PROVISOIRE. Un sabreur sans maître arpente les crêtes au crépuscule, à la poursuite d’un soleil qui refuse de se coucher. Chaque chapitre suit un soir de cette heure bleue sans fin.",
   "cover": "cover.webp",
-  "coverAlt": "Placeholder cover: a silhouetted figure with a staff stands on a ridge in front of a huge pale-blue sun.",
-  "tags": ["samurai", "fantasy", "placeholder"],
+  "coverAlt": "Couverture provisoire : une silhouette armée d’un bâton se dresse sur une crête, devant un immense soleil bleu pâle.",
+  "tags": ["samourai", "fantasy", "provisoire"],
   "status": "ongoing",
   "date": "2026-09-01",
   "aiTools": ["Midjourney v7", "Photoshop"],

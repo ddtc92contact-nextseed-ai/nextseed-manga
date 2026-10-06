@@ -1,9 +1,9 @@
 {
   "title": "Tidewatcher",
-  "description": "PLACEHOLDER artwork. A keeper of the tides raises her staff as the teal sun rises from the sea.",
+  "description": "Illustration PROVISOIRE. La gardienne des marées lève son bâton tandis que le soleil turquoise sort de la mer.",
   "image": "image.webp",
-  "alt": "Placeholder artwork: a figure raises a staff toward a teal sun, speed lines radiating outward.",
+  "alt": "Illustration provisoire : une silhouette lève un bâton vers un soleil turquoise, entourée de lignes de vitesse.",
   "date": "2026-09-10",
-  "tags": ["fantasy", "placeholder"],
+  "tags": ["fantasy", "provisoire"],
   "aiTools": ["FLUX.1", "Krita"]
 }

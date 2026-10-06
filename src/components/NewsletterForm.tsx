@@ -20,7 +20,7 @@ export function NewsletterForm() {
   return (
     <form action={formAction} noValidate>
       <label htmlFor={`${id}-email`} className="mb-2 block text-xs font-semibold uppercase tracking-widest text-paper-muted">
-        Email address
+        Adresse e-mail
       </label>
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
@@ -30,14 +30,14 @@ export function NewsletterForm() {
           autoComplete="email"
           required
           maxLength={254}
-          placeholder="you@example.com"
+          placeholder="vous@exemple.fr"
           defaultValue={state.values?.email}
           aria-invalid={error ? true : undefined}
           aria-describedby={`${id}-status`}
           className={`${fieldControlClasses} min-h-11 sm:flex-1`}
         />
         <Button type="submit" disabled={pending} className="shrink-0 disabled:opacity-60">
-          {pending ? "Subscribing…" : "Subscribe"}
+          {pending ? "Inscription…" : "Je m’inscris"}
         </Button>
       </div>
       <div id={`${id}-status`}>

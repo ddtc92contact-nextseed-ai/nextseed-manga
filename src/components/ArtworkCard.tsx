@@ -16,7 +16,7 @@ type ArtworkCardProps = {
   preload?: boolean;
   /** Width / height of the frame; defaults to a 3:4 portrait. Pass the image's own ratio for masonry layouts. */
   ratio?: number;
-  /** Small label in the bottom-left corner, e.g. "Series". */
+  /** Small label in the bottom-left corner, e.g. "Série". */
   badge?: string;
 };
 
