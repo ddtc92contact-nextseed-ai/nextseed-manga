@@ -158,6 +158,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
           <MangaView
             pages={chapter.pages}
             label={t.pages}
+            roleDescription={t.viewer}
             page={page}
             onPageChange={setPage}
             direction={direction}

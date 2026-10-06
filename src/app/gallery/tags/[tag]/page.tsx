@@ -14,8 +14,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/gallery/tags/[tag]">): Promise<Metadata> {
   const { tag } = await params;
   return pageMetadata({
-    title: `#${tag} · Gallery`,
-    description: `AI-generated manga artworks and series tagged “${tag}” on NextSeed Manga.`,
+    title: `#${tag} · Galerie`,
+    description: `Illustrations et séries manga générées par IA avec le tag «\u00a0${tag}\u00a0» sur NextSeed Manga.`,
     path: `/gallery/tags/${tag}`,
   });
 }

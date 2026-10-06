@@ -27,9 +27,9 @@ export const newsletterSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, "Please enter your email address.")
-    .max(254, "This email address is too long.")
-    .pipe(z.email("Please enter a valid email address.")),
+    .min(1, "Indiquez votre adresse e-mail.")
+    .max(254, "Cette adresse e-mail est trop longue.")
+    .pipe(z.email("Cette adresse e-mail n’est pas valide.")),
 });
 
 export type NewsletterState = FormState<"email">;
@@ -41,14 +41,14 @@ export async function handleNewsletterSignup(
   const values = { email: formString(formData, "email") };
 
   if (!deps.provider) {
-    return { status: "error", message: "The newsletter isn’t available right now.", values };
+    return { status: "error", message: "La newsletter est indisponible pour le moment.", values };
   }
 
   const parsed = newsletterSchema.safeParse(values);
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Please enter a valid email address.",
+      message: "Vérifiez votre adresse e-mail.",
       fieldErrors: z.flattenError(parsed.error).fieldErrors,
       values,
     };
@@ -57,7 +57,7 @@ export async function handleNewsletterSignup(
   if (!deps.limiter.check(deps.ip)) {
     return {
       status: "error",
-      message: "Too many attempts. Please try again in a few minutes.",
+      message: "Trop de tentatives. Réessayez dans quelques minutes.",
       values,
     };
   }
@@ -68,10 +68,10 @@ export async function handleNewsletterSignup(
     console.error(`[newsletter] ${deps.provider.name} signup failed:`, error);
     return {
       status: "error",
-      message: "Something went wrong on our side. Please try again later.",
+      message: "Un souci de notre côté. Réessayez un peu plus tard.",
       values,
     };
   }
 
-  return { status: "success", message: "You’re in! New chapters will land in your inbox." };
+  return { status: "success", message: "C’est noté\u00a0! Les nouveaux chapitres arriveront dans votre boîte mail." };
 }

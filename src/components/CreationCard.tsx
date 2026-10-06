@@ -16,7 +16,7 @@ type CreationCardProps = {
 export function CreationCard({ creation, sizes, index, naturalRatio, preload }: CreationCardProps) {
   const { image, alt } = creationImage(creation);
   const year = creation.date.slice(0, 4);
-  let subtitle = `Artwork · ${year}`;
+  let subtitle = `Illustration · ${year}`;
   let badge: string | undefined;
   if (creation.kind === "series") {
     // Series labels follow the language of the manga ("1 chapitre · En cours").

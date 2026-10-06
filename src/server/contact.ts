@@ -10,25 +10,27 @@ import type { RateLimiter } from "./rate-limit";
 /** Name of the hidden anti-spam field: humans never see it, bots tend to fill it in. */
 export const HONEYPOT_FIELD = "website";
 
+const SENT_MESSAGE = "Merci\u00a0! Votre message est bien parti.";
+
 export const contactSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(1, "Please tell us your name.")
-    .max(100, "Please keep your name under 100 characters.")
+    .min(1, "Indiquez votre nom.")
+    .max(100, "Votre nom ne doit pas dépasser 100 caractères.")
     // Collapse whitespace (incl. newlines) so the name is safe in an email subject.
     .transform((v) => v.replace(/\s+/g, " ")),
   email: z
     .string()
     .trim()
-    .min(1, "Please enter your email address.")
-    .max(254, "This email address is too long.")
-    .pipe(z.email("Please enter a valid email address.")),
+    .min(1, "Indiquez votre adresse e-mail.")
+    .max(254, "Cette adresse e-mail est trop longue.")
+    .pipe(z.email("Cette adresse e-mail n’est pas valide.")),
   message: z
     .string()
     .trim()
-    .min(10, "Your message is a bit short (10 characters minimum).")
-    .max(5000, "Please keep your message under 5000 characters."),
+    .min(10, "Votre message est un peu court (10 caractères minimum).")
+    .max(5000, "Votre message ne doit pas dépasser 5\u202f000 caractères."),
 });
 
 export type ContactField = keyof z.input<typeof contactSchema>;
@@ -92,19 +94,19 @@ export async function handleContactSubmission(
   };
 
   if (!deps.config) {
-    return { status: "error", message: "The contact form is not available right now.", values };
+    return { status: "error", message: "Le formulaire de contact est indisponible pour le moment.", values };
   }
 
   // Honeypot filled: pretend it worked so bots don't learn anything.
   if (formString(formData, HONEYPOT_FIELD)) {
-    return { status: "success", message: "Thanks! Your message is on its way." };
+    return { status: "success", message: SENT_MESSAGE };
   }
 
   const parsed = contactSchema.safeParse(values);
   if (!parsed.success) {
     return {
       status: "error",
-      message: "Please fix the highlighted fields.",
+      message: "Corrigez les champs signalés, puis renvoyez.",
       fieldErrors: z.flattenError(parsed.error).fieldErrors,
       values,
     };
@@ -113,7 +115,7 @@ export async function handleContactSubmission(
   if (!deps.limiter.check(deps.ip)) {
     return {
       status: "error",
-      message: "You’ve sent several messages in a short time. Please try again in a few minutes.",
+      message: "Vous avez envoyé plusieurs messages en peu de temps. Réessayez dans quelques minutes.",
       values,
     };
   }
@@ -122,20 +124,20 @@ export async function handleContactSubmission(
   try {
     const mailer = deps.mailer ?? createSmtpMailer(deps.config);
     await mailer.sendMail({
-      from: { name: `${site.name} contact form`, address: deps.config.from },
+      from: { name: `Formulaire de contact ${site.name}`, address: deps.config.from },
       to: deps.config.to,
       replyTo: { name, address: email },
-      subject: `[${site.name}] Message from ${name}`,
+      subject: `[${site.name}] Message de ${name}`,
       text: `${message}\n\n— ${name} <${email}>`,
     });
   } catch (error) {
     console.error("[contact] sending failed:", error);
     return {
       status: "error",
-      message: "Your message couldn’t be sent. Please try again later or reach out by email.",
+      message: "Impossible d’envoyer votre message. Réessayez plus tard ou écrivez-nous par e-mail.",
       values,
     };
   }
 
-  return { status: "success", message: "Thanks! Your message is on its way." };
+  return { status: "success", message: SENT_MESSAGE };
 }

@@ -7,7 +7,7 @@ import { NewsletterForm } from "./NewsletterForm";
 type NewsletterSignupProps = {
   /**
    * `compact` for the footer; `panel` is a framed block meant for the end of a chapter
-   * or page ("Get the next chapter in your inbox").
+   * or page ("Recevez le prochain chapitre en avant-première").
    */
   variant?: "compact" | "panel";
   title?: string;
@@ -21,8 +21,8 @@ type NewsletterSignupProps = {
  */
 export async function NewsletterSignup({
   variant = "compact",
-  title = "Get the next chapter first",
-  text = "New pages and volumes, straight to your inbox. No spam, unsubscribe anytime.",
+  title = "Le prochain chapitre, en avant-première",
+  text = "Nouvelles planches et nouveaux volumes, directement dans votre boîte mail. Zéro spam, désinscription en un clic.",
   className = "",
 }: NewsletterSignupProps) {
   // Env vars are read at runtime on the VPS, not baked in at build time.

@@ -130,7 +130,7 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
                       </span>
                     </span>
                     <span className="hidden shrink-0 items-center gap-2 text-xs font-semibold uppercase tracking-wider text-paper-faint group-hover:text-accent sm:flex">
-                      Read <span aria-hidden="true" className="font-display text-xl">→</span>
+                      Lire <span aria-hidden="true" className="font-display text-xl">→</span>
                     </span>
                   </Link>
                 </li>

@@ -10,7 +10,7 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-ink-700 bg-ink-950/85 backdrop-blur-md">
       <Container className="flex h-16 items-center justify-between gap-6">
         <Wordmark />
-        <nav aria-label="Primary" className="hidden md:block">
+        <nav aria-label="Navigation principale" className="hidden md:block">
           <ul className="flex items-center gap-8">
             {site.nav.map((item) => (
               <li key={item.href}>

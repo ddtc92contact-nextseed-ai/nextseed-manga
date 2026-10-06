@@ -21,7 +21,7 @@ export function ContactForm() {
     <form action={formAction} noValidate className="relative grid gap-6">
       <div className="grid gap-6 sm:grid-cols-2">
         <FormField
-          label="Name"
+          label="Nom"
           name="name"
           autoComplete="name"
           required
@@ -30,7 +30,7 @@ export function ContactForm() {
           errors={errors.name}
         />
         <FormField
-          label="Email"
+          label="E-mail"
           name="email"
           type="email"
           autoComplete="email"
@@ -53,13 +53,13 @@ export function ContactForm() {
 
       {/* Honeypot: hidden from people and assistive tech, tempting for bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">
-        <label htmlFor="contact-website">Leave this field empty</label>
+        <label htmlFor="contact-website">Laissez ce champ vide</label>
         <input id="contact-website" type="text" name="website" tabIndex={-1} autoComplete="off" />
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <Button type="submit" size="lg" disabled={pending} className="disabled:opacity-60">
-          {pending ? "Sending…" : "Send message"}
+          {pending ? "Envoi…" : "Envoyer le message"}
         </Button>
         <FormStatus state={state} />
       </div>

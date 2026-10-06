@@ -1,17 +1,17 @@
 export const site = {
   name: "NextSeed Manga",
-  tagline: "AI-generated manga, inked one panel at a time.",
+  tagline: "Du manga généré par IA, encré case après case.",
   description:
-    "A showcase of manga artwork and stories created with generative image AI by NextSeed-AI.",
+    "La vitrine des mangas et illustrations créés par NextSeed-AI avec l’IA générative.",
   /**
    * Public URL of the site, used for canonical URLs, Open Graph and the sitemap.
    * Set SITE_URL (e.g. https://manga.example.com) when building for production.
    */
   url: (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/+$/, ""),
   nav: [
-    { label: "Gallery", href: "/gallery" },
-    { label: "About", href: "/about" },
+    { label: "Galerie", href: "/gallery" },
+    { label: "À propos", href: "/about" },
     { label: "Contact", href: "/about#contact" },
-    { label: "Follow", href: "/#follow" },
+    { label: "Suivre", href: "/#follow" },
   ],
 } as const;

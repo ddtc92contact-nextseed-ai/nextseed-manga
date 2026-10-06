@@ -11,17 +11,17 @@ const process = [
   {
     step: "01",
     title: "Script & prompt",
-    text: "Every page starts as a story beat, then becomes a carefully written prompt.",
+    text: "Chaque page naît d’un temps fort du récit, puis devient un prompt ciselé.",
   },
   {
     step: "02",
-    title: "Generate & select",
-    text: "Dozens of AI generations per panel; only the strongest frames survive.",
+    title: "Générer & trier",
+    text: "Des dizaines de générations par case\u00a0: seules les plus fortes survivent.",
   },
   {
     step: "03",
-    title: "Ink & letter",
-    text: "Panels are composed, retouched and lettered by hand into finished pages.",
+    title: "Encrer & lettrer",
+    text: "Les cases sont composées, retouchées et lettrées à la main jusqu’à la planche finale.",
   },
 ];
 
@@ -62,12 +62,12 @@ export default function Home() {
 
       <Section
         id="latest"
-        kicker="Chapter 01"
-        title="Latest creations"
-        intro="Fresh off the press: the most recent pages and covers from the studio."
+        kicker="Chapitre 01"
+        title="Dernières créations"
+        intro="Tout juste sorties de l’encrier&nbsp;: les dernières planches et couvertures de l’atelier."
         action={
           <Button href="/gallery" variant="outline">
-            View the gallery
+            Voir la galerie
           </Button>
         }
       >
@@ -109,20 +109,20 @@ export default function Home() {
 
           <div>
             <p className="mb-3 text-xs font-semibold uppercase tracking-kicker text-accent">
-              About the artist
+              L’artiste
             </p>
             <h2 id="about-title" className="font-display text-display-sm">
-              Made with AI, <br className="hidden sm:block" />
-              directed by a human.
+              Fait avec l’IA, <br className="hidden sm:block" />
+              dirigé par un humain.
             </h2>
             <div className="mt-6 space-y-4 text-lg leading-relaxed text-paper-muted">
               <p>
-                NextSeed Manga is the creative playground of NextSeed-AI: a studio exploring how
-                generative image models can tell stories in the visual language of manga.
+                NextSeed Manga est le terrain de jeu créatif de NextSeed-AI&nbsp;: un atelier qui explore
+                comment l’IA générative peut raconter des histoires dans le langage visuel du manga.
               </p>
               <p>
-                The AI draws; the artist writes, selects, composes and edits. Every page here is
-                curated, never a raw output.
+                L’IA dessine&nbsp;; l’artiste écrit, choisit, compose et retouche. Chaque page est
+                sélectionnée avec soin, jamais livrée brute.
               </p>
             </div>
             <ol className="mt-10 grid gap-6 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
@@ -142,16 +142,16 @@ export default function Home() {
         <div aria-hidden="true" className="absolute inset-0 -z-10 bg-screentone-accent [mask-image:linear-gradient(to_left,black,transparent_80%)]" />
         <div className="flex flex-col items-start gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-bold uppercase tracking-kicker">To be continued…</p>
+            <p className="mb-3 text-xs font-bold uppercase tracking-kicker">À suivre…</p>
             <h2 id="follow-title" className="font-display text-display-sm uppercase">
-              The next chapter is being inked.
+              Le prochain chapitre est à l’encrage.
             </h2>
             <p className="mt-4 text-lg text-ink-900">
-              New pages land regularly. Dive into the gallery and come back for the next volume.
+              De nouvelles planches arrivent régulièrement. Plongez dans la galerie et revenez pour le prochain volume.
             </p>
           </div>
           <Button href="/gallery" variant="ink" size="lg">
-            Browse the gallery
+            Parcourir la galerie
           </Button>
         </div>
       </Section>

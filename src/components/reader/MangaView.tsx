@@ -25,6 +25,8 @@ type Props = {
   pages: ReaderPage[];
   /** Accessible name of the page list, in the series language. */
   label: string;
+  /** `aria-roledescription` of the viewer, in the series language. */
+  roleDescription: string;
   /** Current page index; pages.length is the end-of-chapter screen. */
   page: number;
   onPageChange: (index: number) => void;
@@ -50,6 +52,7 @@ const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
 export function MangaView({
   pages,
   label,
+  roleDescription,
   page,
   onPageChange,
   direction,
@@ -363,7 +366,7 @@ export function MangaView({
     <div
       ref={stageRef}
       role="region"
-      aria-roledescription="page viewer"
+      aria-roledescription={roleDescription}
       aria-label={label}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}

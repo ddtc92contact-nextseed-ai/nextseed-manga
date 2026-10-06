@@ -5,7 +5,7 @@ import { ogSize, renderOgImage } from "@/lib/og-image";
 
 export const size = ogSize;
 export const contentType = "image/jpeg";
-export const alt = "Artwork from NextSeed Manga";
+export const alt = "Illustration de NextSeed Manga";
 export const dynamicParams = false;
 
 export function generateStaticParams() {

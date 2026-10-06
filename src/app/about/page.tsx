@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -11,58 +10,60 @@ import { Section } from "@/components/Section";
 import { SocialLinks } from "@/components/SocialLinks";
 import { getSocialLinks } from "@/config/social";
 import { getFeaturedSeries } from "@/lib/content";
+import { pageMetadata } from "@/lib/metadata";
 import { getSmtpConfig } from "@/server/contact";
 
-export const metadata: Metadata = {
-  title: "About & contact",
+export const metadata = pageMetadata({
+  title: "À propos & contact",
   description:
-    "Meet the artist behind NextSeed Manga, learn how the AI-generated manga is made, and get in touch.",
-};
+    "Rencontrez l’artiste derrière NextSeed Manga, découvrez comment naissent ses mangas générés par IA, et prenez contact.",
+  path: "/about",
+});
 
 // TODO(manager): every text block on this page is placeholder copy — replace it with your own.
 const process = [
   {
     step: "01",
-    title: "The story comes first",
-    text: "TODO(manager): Each chapter starts as a script: characters, beats, the mood of every page. The AI never decides what happens.",
+    title: "L’histoire d’abord",
+    text: "TODO(manager): Chaque chapitre commence par un script\u00a0: les personnages, les temps forts, l’ambiance de chaque page. L’IA ne décide jamais de ce qui arrive.",
   },
   {
     step: "02",
-    title: "Prompting & generation",
-    text: "TODO(manager): Panels are described in detailed prompts and generated with image models, often dozens of times, until a frame truly fits.",
+    title: "Prompts & génération",
+    text: "TODO(manager): Chaque case est décrite dans un prompt détaillé puis générée avec des modèles d’image, souvent des dizaines de fois, jusqu’à ce qu’une image tombe juste.",
   },
   {
     step: "03",
-    title: "Direction & selection",
-    text: "TODO(manager): Like an art director, I keep only the strongest frames and push the style towards consistency across the whole book.",
+    title: "Direction & sélection",
+    text: "TODO(manager): Comme un directeur artistique, je ne garde que les images les plus fortes et je pousse le style vers une vraie cohérence sur tout le livre.",
   },
   {
     step: "04",
-    title: "Composition & lettering",
-    text: "TODO(manager): Panels are cropped, retouched, laid out and lettered by hand into finished manga pages.",
+    title: "Composition & lettrage",
+    text: "TODO(manager): Les cases sont recadrées, retouchées, mises en page et lettrées à la main jusqu’à la planche finale.",
   },
 ];
 
 const faq = [
   {
-    question: "Is all of this made by AI?",
+    question: "Tout est fait par l’IA\u00a0?",
     answer:
-      "TODO(manager): The images are generated with AI; the stories, direction, selection, layout and lettering are human work. Every page is curated, never a raw output.",
+      "TODO(manager): Les images sont générées par IA\u00a0; les histoires, la direction, la sélection, la mise en page et le lettrage sont un travail humain. Chaque page est choisie avec soin, jamais livrée brute.",
   },
   {
-    question: "Which tools do you use?",
+    question: "Quels outils utilisez-vous\u00a0?",
     answer:
-      "TODO(manager): A mix of generative image models and classic editing software. List your actual toolchain here.",
+      "TODO(manager): Un mélange de modèles d’image génératifs et de logiciels de retouche classiques. Indiquez ici vos vrais outils.",
   },
   {
-    question: "Can I use or share your artwork?",
+    question: "Puis-je utiliser ou partager vos illustrations\u00a0?",
     answer:
-      "TODO(manager): Sharing with credit and a link back is welcome. For any other use (prints, commercial projects), please get in touch first.",
+      "TODO(manager): Le partage est bienvenu, avec crédit et lien vers le site. Pour tout autre usage (tirages, projets commerciaux), contactez-moi d’abord.",
   },
   {
-    question: "Do you take commissions or collaborations?",
+    question: "Acceptez-vous les commandes ou les collaborations\u00a0?",
     answer:
-      "TODO(manager): Describe whether you accept commissions or collaborations, and how to ask — the contact form below is a good start.",
+      "TODO(manager): Précisez si vous acceptez commandes et collaborations, et comment en faire la demande — le formulaire de contact ci-dessous est un bon début.",
   },
 ] as const;
 
@@ -78,21 +79,21 @@ export default function AboutPage() {
         <Container className="grid items-center gap-12 py-section lg:grid-cols-[1.1fr_1fr] lg:gap-20 lg:py-section-lg">
           <div>
             <p className="mb-5 inline-block bg-accent px-3 py-1 text-xs font-bold uppercase tracking-kicker text-ink-950">
-              About the artist
+              L’artiste
             </p>
             <h1 id="about-title" className="font-display text-display uppercase text-balance">
-              The hand <span className="text-accent">behind the machine.</span>
+              La main <span className="text-accent">derrière la machine.</span>
             </h1>
             <div className="mt-8 max-w-xl space-y-4 text-lg leading-relaxed text-paper-muted">
               {/* TODO(manager): replace with your own presentation. */}
               <p>
-                TODO(manager): NextSeed Manga is the creative studio of NextSeed-AI. I write manga
-                stories and bring them to life with generative image AI, directing every panel the
-                way an editor would.
+                TODO(manager): NextSeed Manga est l’atelier créatif de NextSeed-AI. J’écris des
+                histoires de manga et je leur donne vie avec l’IA générative, en dirigeant chaque
+                case comme le ferait un éditeur.
               </p>
               <p>
-                TODO(manager): Say a few words about yourself: your background, what draws you to
-                manga, the worlds you like to build.
+                TODO(manager): Quelques mots sur vous&nbsp;: votre parcours, ce qui vous attire dans le
+                manga, les univers que vous aimez construire.
               </p>
             </div>
             <SocialLinks size="lg" className="mt-10" />
@@ -124,9 +125,9 @@ export default function AboutPage() {
 
       <Section
         id="process"
-        kicker="How it’s made"
-        title="Generative AI, human direction"
-        intro="TODO(manager): A short intro to your process. The AI is the brush; the story, the taste and the final page are yours."
+        kicker="Les coulisses"
+        title="IA générative, direction humaine"
+        intro="TODO(manager): Une courte intro à votre façon de travailler. L’IA est le pinceau&nbsp;; l’histoire, le goût et la planche finale sont à vous."
         tone="raised"
         className="relative isolate overflow-hidden"
       >
@@ -142,15 +143,15 @@ export default function AboutPage() {
         </ol>
       </Section>
 
-      <Section id="faq" kicker="FAQ" title="Questions, answered">
+      <Section id="faq" kicker="FAQ" title="Vos questions, nos réponses">
         <Faq items={faq} />
       </Section>
 
       <Section
         id="contact"
         kicker="Contact"
-        title="Let’s talk"
-        intro="Questions, collaborations, or just want to say hi? Send a message and I’ll get back to you."
+        title="Parlons-en"
+        intro={"Une question, une collab, ou juste envie de dire bonjour\u00a0? Envoyez un message, je vous réponds vite."}
         tone="raised"
       >
         <div className="grid gap-12 lg:grid-cols-[2fr_1fr] lg:gap-20">
@@ -159,8 +160,8 @@ export default function AboutPage() {
           </Suspense>
           {getSocialLinks().length > 0 && (
             <div>
-              <h3 className="font-display text-xl">Follow the studio</h3>
-              <p className="mt-3 mb-6 text-paper-muted">New pages are posted on these networks first.</p>
+              <h3 className="font-display text-xl">Suivre l’atelier</h3>
+              <p className="mt-3 mb-6 text-paper-muted">Les nouvelles planches sont publiées ici en premier.</p>
               <SocialLinks size="lg" showLabels className="flex-col items-start" />
             </div>
           )}

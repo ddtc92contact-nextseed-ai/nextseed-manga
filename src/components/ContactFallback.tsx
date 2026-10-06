@@ -8,14 +8,14 @@ export function ContactFallback() {
 
   return (
     <div className="panel bg-ink-900 p-6 sm:p-10">
-      <h3 className="font-display text-2xl">Drop us a line</h3>
+      <h3 className="font-display text-2xl">Un petit mot&nbsp;?</h3>
       <p className="mt-3 max-w-xl leading-relaxed text-paper-muted">
-        The contact form is taking a break.{" "}
+        Le formulaire de contact fait une pause.{" "}
         {contactEmail
-          ? "The quickest way to reach the studio is a good old email:"
+          ? "Le plus rapide pour joindre l’atelier, c’est un bon vieil e-mail\u00a0:"
           : hasSocials
-            ? "The quickest way to reach the studio is a message on one of the networks listed on this page."
-            : "Please check back soon."}
+            ? "Le plus rapide pour joindre l’atelier, c’est un message sur l’un des réseaux listés sur cette page."
+            : "Revenez très bientôt\u00a0!"}
       </p>
       {contactEmail && (
         <a href={`mailto:${contactEmail}`} className={buttonClasses({ size: "lg", className: "mt-8 normal-case! break-all" })}>

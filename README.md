@@ -130,6 +130,16 @@ wrap it in `<Suspense>`. Use `variant="panel"` for a framed call-to-action at th
 
 Don't hard-code colours or fonts in components; add a token instead.
 
+## Language
+
+**All UI copy is French.** The site is French-only (`<html lang="fr">`, Open Graph `locale: "fr_FR"`),
+so there is no i18n framework: strings live in the components that render them. Format dates and
+numbers with the `fr-FR` locale (`formatDate` / `plural` in `src/lib/format.ts`; labels around a series follow its
+`language` and live in `src/lib/labels.ts`), and keep accessibility
+text (alt, `aria-label`, sr-only), metadata and server messages returned to the forms in French too.
+Use typographic apostrophes (’) and a non-breaking space before `: ; ? !` (`&nbsp;` in JSX,
+`\u00a0` in JS strings). Code, comments and content field names stay in English.
+
 ## Social links
 
 Edit `src/config/social.ts`: one URL per network (Instagram, X, TikTok, YouTube, Pixiv, Bluesky,
