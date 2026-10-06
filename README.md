@@ -73,8 +73,10 @@ Threads, Discord, Patreon). An empty string hides that network in the footer and
 
 ## Environment variables
 
-All optional; copy `.env.example` to `.env.local` for local development. They are read **at request
-time** (pages are server-rendered on the VPS), so changing them only needs a restart, not a rebuild.
+All optional. In production, set them in the server's `.env` next to the deployment variables
+(`docker compose` passes the whole file to the container, see `.env.example`); for local development
+put them in `.env.local`. They are read **at request time**, so changing them only needs a container
+restart (`docker compose up -d`), not a rebuild.
 
 | Variable        | Used for                                                        | When missing                         |
 | --------------- | --------------------------------------------------------------- | ------------------------------------ |
@@ -96,3 +98,15 @@ To try the contact form locally without a real mailbox, run a catcher such as
 
 To swap newsletter providers, add an adapter implementing `NewsletterProvider`
 (`src/server/newsletter/types.ts`) next to `brevo.ts` and select it in `getNewsletterProvider()`.
+
+## Deployment
+
+Production runs as a Docker container behind the VPS's existing Traefik (no host port).
+`next.config.ts` uses `output: "standalone"`; `GET /api/health` is the container healthcheck.
+
+- `Dockerfile` – multi-stage Node 22 image, non-root, listens on `PORT` (default 3000).
+- `docker-compose.yml` + `.env.example` – external Traefik network and Traefik v2 labels, all env-driven.
+- `.github/workflows/ci.yml` – lint, build, compose validation and `docker build` + smoke test on PRs and `main`.
+
+Content and artwork are baked into the image: a new creation is merge to `main`, then pull + rebuild
+on the server. Step-by-step guide (in French): [DEPLOY.md](DEPLOY.md).
