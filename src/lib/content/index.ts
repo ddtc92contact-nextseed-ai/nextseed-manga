@@ -7,7 +7,10 @@ import { z } from "zod";
 import {
   artworkSchema,
   chapterSchema,
+  type Language,
+  type ReadingDirection,
   type ReadingMode,
+  type SeriesMeta,
   seriesSchema,
   type SeriesStatus,
   slugSchema,
@@ -57,6 +60,7 @@ export type Series = {
   slug: string;
   href: string;
   title: string;
+  subtitle?: string;
   synopsis: string;
   cover: ContentImage;
   coverAlt: string;
@@ -67,6 +71,9 @@ export type Series = {
   updated: string;
   aiTools: string[];
   readingMode: ReadingMode;
+  readingDirection: ReadingDirection;
+  /** Language of the lettering, used for the labels around the series. */
+  language: Language;
   chapters: Chapter[];
 };
 
@@ -196,7 +203,7 @@ class Loader {
     });
   }
 
-  chapters(seriesDir: string, seriesSlug: string, seriesTitle: string): Chapter[] {
+  chapters(seriesDir: string, seriesSlug: string, series: SeriesMeta): Chapter[] {
     const dir = path.join(seriesDir, "chapters");
     const chapters = this.folders(dir).flatMap((slug): Chapter[] => {
       const chapterDir = path.join(dir, slug);
@@ -212,11 +219,19 @@ class Loader {
         this.report(file, "chapter has no page images (add 01.webp, 02.webp... next to chapter.json)");
         return [];
       }
+      const pageAlt = meta.pageAlt ?? {};
+      for (const name of Object.keys(pageAlt)) {
+        if (!pageFiles.includes(name)) {
+          this.report(file, `pageAlt.${name}: no page image named "${name}" in this chapter folder`);
+        }
+      }
+      const genericAlt = (page: number) =>
+        series.language === "fr"
+          ? `${series.title}, chapitre ${meta.number}, page ${page}`
+          : `${series.title}, chapter ${meta.number}, page ${page}`;
       const pages = pageFiles.flatMap((name, i): ChapterPage[] => {
         const image = this.image(file, name);
-        return image
-          ? [{ number: i + 1, image, alt: `${seriesTitle}, chapter ${meta.number}, page ${i + 1}` }]
-          : [];
+        return image ? [{ number: i + 1, image, alt: pageAlt[name] ?? genericAlt(i + 1) }] : [];
       });
 
       return [
@@ -254,7 +269,7 @@ class Loader {
       const meta = this.json(file, seriesSchema);
       const cover = meta && this.image(file, meta.cover);
       if (!meta || !cover) return [];
-      const chapters = this.chapters(seriesDir, slug, meta.title);
+      const chapters = this.chapters(seriesDir, slug, meta);
       const updated = [meta.date, ...chapters.map((c) => c.date)].sort().at(-1)!;
       return [
         {
@@ -262,6 +277,7 @@ class Loader {
           slug,
           href: `/series/${slug}`,
           title: meta.title,
+          subtitle: meta.subtitle,
           synopsis: meta.synopsis,
           cover,
           coverAlt: meta.coverAlt,
@@ -271,6 +287,8 @@ class Loader {
           updated,
           aiTools: meta.aiTools ?? [],
           readingMode: meta.readingMode,
+          readingDirection: meta.readingDirection,
+          language: meta.language,
           chapters,
         },
       ];
@@ -299,6 +317,9 @@ export function getContent(): Content {
 
 export const getArtworks = () => getContent().artworks;
 export const getSeries = () => getContent().series;
+
+/** Series shown in the landing page hero: the most recently updated one. */
+export const getFeaturedSeries = (): Series | undefined => getSeries()[0];
 
 export const getArtwork = (slug: string) => getArtworks().find((a) => a.slug === slug);
 export const getSeriesBySlug = (slug: string) => getSeries().find((s) => s.slug === slug);
