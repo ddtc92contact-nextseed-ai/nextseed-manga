@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { seriesLabels } from "@/lib/labels";
 
 import { ChapterEnd } from "./ChapterEnd";
+import { stepForSide } from "./direction";
 import { MangaView } from "./MangaView";
 import { usePreference } from "./prefs";
 import { type ReaderData, readingDirections, readingModes } from "./types";
@@ -46,7 +47,15 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
 
   const total = chapter.pages.length;
   const atEnd = page >= total;
+  // Page order only matters page by page: webtoon mode always scrolls top to bottom.
   const rtl = mode === "manga" && direction === "rtl";
+
+  /** Chrome page button turning `step` pages (its side comes from the reading direction). */
+  const pageButton = (step: -1 | 1) => ({
+    label: step === 1 ? t.nextPage : t.previousPage,
+    disabled: step === 1 ? atEnd : page === 0,
+    onClick: () => setPage((p) => Math.min(total, Math.max(0, p + step))),
+  });
 
   /* ----------------------------------------------------------------- chrome */
 
@@ -126,7 +135,12 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
   /* ----------------------------------------------------------------- render */
 
   return (
-    <div id="reader" lang={series.language} data-mode={mode} className="min-h-dvh bg-ink-950">
+    <div
+      id="reader"
+      lang={series.language}
+      data-mode={mode}
+      data-direction={mode === "manga" ? direction : undefined}
+      className="min-h-dvh bg-ink-950">
       {mode === "webtoon" ? (
         <WebtoonView
           pages={chapter.pages}
@@ -209,15 +223,18 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
           </div>
           <div className="mx-auto grid h-14 max-w-site grid-cols-[1fr_auto_1fr] items-center gap-2 px-gutter lg:px-gutter-lg">
             <div className="flex justify-start">
-              <ChapterLink target={previous} label={t.previousChapter} labels={t} prefix="←" />
+              {rtl ? (
+                <ChapterLink target={next} label={t.nextChapter} labels={t} prefix="←" />
+              ) : (
+                <ChapterLink target={previous} label={t.previousChapter} labels={t} prefix="←" />
+              )}
             </div>
 
             <div className="flex items-center gap-1">
               {mode === "manga" && (
                 <PageButton
-                  label={rtl ? t.nextPage : t.previousPage}
-                  disabled={rtl ? atEnd : page === 0}
-                  onClick={() => setPage((p) => Math.min(total, Math.max(0, p + (rtl ? 1 : -1))))}
+                  {...pageButton(stepForSide(direction, "left"))}
+                  keyShortcut="ArrowLeft"
                 >
                   ‹
                 </PageButton>
@@ -227,9 +244,8 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
               </span>
               {mode === "manga" && (
                 <PageButton
-                  label={rtl ? t.previousPage : t.nextPage}
-                  disabled={rtl ? page === 0 : atEnd}
-                  onClick={() => setPage((p) => Math.min(total, Math.max(0, p + (rtl ? -1 : 1))))}
+                  {...pageButton(stepForSide(direction, "right"))}
+                  keyShortcut="ArrowRight"
                 >
                   ›
                 </PageButton>
@@ -248,7 +264,11 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
             </div>
 
             <div className="flex justify-end">
-              <ChapterLink target={next} label={t.nextChapter} labels={t} suffix="→" />
+              {rtl ? (
+                <ChapterLink target={previous} label={t.previousChapter} labels={t} suffix="→" />
+              ) : (
+                <ChapterLink target={next} label={t.nextChapter} labels={t} suffix="→" />
+              )}
             </div>
           </div>
         </nav>
@@ -304,17 +324,22 @@ function PageButton({
   label,
   disabled,
   onClick,
+  keyShortcut,
   children,
 }: {
   label: string;
   disabled: boolean;
   onClick: () => void;
+  /** Arrow key doing the same thing, announced to assistive tech and shown on hover. */
+  keyShortcut: "ArrowLeft" | "ArrowRight";
   children: string;
 }) {
   return (
     <button
       type="button"
       aria-label={label}
+      aria-keyshortcuts={keyShortcut}
+      title={`${label} (${keyShortcut === "ArrowLeft" ? "←" : "→"})`}
       disabled={disabled}
       onClick={onClick}
       className="flex size-9 items-center justify-center text-2xl text-paper-muted transition-colors hover:text-accent disabled:opacity-30 disabled:hover:text-paper-muted"

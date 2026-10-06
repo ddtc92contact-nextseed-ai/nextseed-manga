@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 
+import { arrowKeys, pageOffset, stepForSide, stepForSwipe } from "./direction";
 import { READING_QUALITY, type ReaderPage, type ReadingDirection } from "./types";
 
 const MAX_SCALE = 4;
@@ -40,8 +41,8 @@ const distance = (a: { x: number; y: number }, b: { x: number; y: number }) =>
   Math.hypot(a.x - b.x, a.y - b.y);
 
 /**
- * Manga mode: one page at a time, right-to-left by default.
- * Navigation: tap/click the left or right third, swipe, arrow keys (following the reading
+ * Manga mode: one page at a time, in the series reading direction (see ./direction.ts).
+ * Navigation: tap/click the left or right third, swipe, arrow keys (all following the reading
  * direction), PageUp/PageDown, Home/End; Esc goes back to the series.
  * Zoom: pinch, double-tap/double-click, ctrl+wheel (trackpad pinch), +/-/0 keys; drag to pan.
  * Gestures write transforms straight to the DOM so they run at the display's frame rate.
@@ -67,8 +68,6 @@ export function MangaView({
   const tapTimer = useRef<number | undefined>(undefined);
 
   const last = pages.length; // index of the end screen
-  // Where the next page sits: on the left when reading right-to-left.
-  const nextSide = direction === "rtl" ? -1 : 1;
 
   /* ----------------------------------------------------------------- zoom */
 
@@ -152,8 +151,7 @@ export function MangaView({
       if (target.closest("input, textarea, select, [contenteditable]")) return;
       const onControl = target.closest("a, button");
 
-      const forward = direction === "rtl" ? "ArrowLeft" : "ArrowRight";
-      const backward = direction === "rtl" ? "ArrowRight" : "ArrowLeft";
+      const { forward, backward } = arrowKeys(direction);
       let handled = true;
       switch (event.key) {
         case forward:
@@ -226,6 +224,15 @@ export function MangaView({
     return { x: event.clientX - rect.left, y: event.clientY - rect.top };
   };
 
+  /** Keeps receiving a dragging pointer outside the stage; a lost pointer must not abort the gesture. */
+  const capture = (pointerId: number) => {
+    try {
+      stageRef.current?.setPointerCapture(pointerId);
+    } catch {
+      // The pointer is already gone (e.g. released during the move): nothing to capture.
+    }
+  };
+
   const handleTap = (x: number, y: number) => {
     const width = stageRef.current?.clientWidth ?? 1;
     const now = performance.now();
@@ -243,7 +250,7 @@ export function MangaView({
     if (zone !== "center" && zoom.current.scale === 1) {
       // Side zones turn the page at once (no double-tap wait), following the reading direction.
       lastTap.current = null;
-      goTo(page + (zone === "left" ? -nextSide : nextSide));
+      goTo(page + stepForSide(direction, zone));
       return;
     }
     // Middle of the page (or zoomed in): wait to tell a single tap from a double tap.
@@ -297,16 +304,16 @@ export function MangaView({
       const dx = point.x - g.startX;
       const dy = point.y - g.startY;
       if (!g.moved && Math.hypot(dx, dy) < TAP_SLOP) return;
-      if (!g.moved) stageRef.current?.setPointerCapture(event.pointerId);
+      if (!g.moved) capture(event.pointerId);
       g.moved = true;
       applyZoom({ scale: g.origin.scale, x: g.origin.x + dx, y: g.origin.y + dy });
     } else if (g.kind === "swipe") {
       const dx = point.x - g.startX;
       if (!g.moved && Math.hypot(dx, point.y - g.startY) < TAP_SLOP) return;
-      if (!g.moved) stageRef.current?.setPointerCapture(event.pointerId);
+      if (!g.moved) capture(event.pointerId);
       g.moved = true;
       // Rubber-band when there is no page in that direction.
-      const target = page + (dx > 0 ? -nextSide : nextSide);
+      const target = page + stepForSwipe(direction, dx);
       g.dx = target < 0 || target > last ? dx * 0.25 : dx;
       dragTrack(g.dx);
     }
@@ -340,7 +347,7 @@ export function MangaView({
       const velocity = g.dx / Math.max(1, performance.now() - g.startTime);
       dragTrack(null);
       if (Math.abs(g.dx) > Math.min(80, width * 0.15) || Math.abs(velocity) > 0.5) {
-        goTo(page + (g.dx > 0 ? -nextSide : nextSide));
+        goTo(page + stepForSwipe(direction, g.dx));
       }
     } else if ((g.kind === "swipe" || g.kind === "pan") && !g.moved) {
       handleTap(point.x, point.y);
@@ -366,7 +373,7 @@ export function MangaView({
     >
       <div ref={trackRef} className="absolute inset-0 motion-safe:transition-transform motion-safe:duration-300 ease-out">
         {visible.map((i) => {
-          const offset = (i - page) * nextSide;
+          const offset = pageOffset(direction, i, page);
           const current = i === page;
           const p = pages[i];
           return (
