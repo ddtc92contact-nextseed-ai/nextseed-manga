@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "content": "node scripts/sync-content-images.mjs",
+    "to-webp": "node scripts/to-webp.mjs",
     "predev": "npm run content",
     "prebuild": "npm run content"
   },

@@ -1,0 +1,14 @@
+{
+  "title": "IA-MI",
+  "subtitle": "Le robot sans mémoire",
+  "synopsis": "Pour son exposé sur l'IA, Alex n'y comprend rien… jusqu'à ce que sa cousine Nadia débarque avec un drôle de petit robot. Une aventure pour découvrir l'intelligence artificielle en s'amusant.",
+  "cover": "cover.webp",
+  "coverAlt": "Couverture d'IA-MI, Tome 1 : un petit robot blanc à l'écran lumineux flotte dans un parc, entouré d'icônes holographiques (téléphone, cadenas, bus, puce), au milieu de quatre enfants enthousiastes : Alex en sweat bleu, Nadia aux cheveux blonds, Line avec son carnet et Moussa avec ses lunettes de soudeur.",
+  "tags": ["jeunesse", "intelligence-artificielle", "aventure"],
+  "status": "ongoing",
+  "date": "2026-10-06",
+  "aiTools": ["Qwen Image"],
+  "readingMode": "manga",
+  "readingDirection": "ltr",
+  "language": "fr"
+}
