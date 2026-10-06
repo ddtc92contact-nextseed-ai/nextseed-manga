@@ -1,21 +1,29 @@
+import { Suspense } from "react";
+
 import { site } from "@/lib/site";
 
 import { Container } from "./Container";
+import { NewsletterSignup } from "./NewsletterSignup";
+import { SocialLinks } from "./SocialLinks";
 import { Wordmark } from "./Wordmark";
 
-/** Site footer: wordmark, tagline, secondary navigation and credits. */
+/** Site footer: wordmark, tagline, socials, newsletter (when configured), navigation and credits. */
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
     <footer className="border-t-4 border-accent bg-ink-900">
-      <Container className="grid gap-10 py-14 md:grid-cols-[2fr_1fr] md:items-start">
+      <Container className="grid gap-10 py-14 md:grid-cols-2 md:items-start lg:grid-cols-[1fr_1.2fr_auto] lg:gap-16">
         <div className="max-w-md">
           <Wordmark />
           <p className="mt-4 text-paper-muted">{site.tagline}</p>
+          <SocialLinks className="mt-6" />
         </div>
-        <nav aria-label="Footer">
-          <ul className="flex flex-wrap gap-x-8 gap-y-3 md:justify-end">
+        <Suspense>
+          <NewsletterSignup className="max-w-md" />
+        </Suspense>
+        <nav aria-label="Footer" className="md:col-span-2 lg:col-span-1">
+          <ul className="flex flex-wrap gap-x-8 gap-y-3 lg:flex-col lg:items-end">
             {site.nav.map((item) => (
               <li key={item.href}>
                 <a
