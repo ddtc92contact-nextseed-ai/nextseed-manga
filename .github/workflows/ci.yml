@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: Lint & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+  docker:
+    name: Docker image & compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose.yml with .env.example
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+          if grep -nE '^\s*ports:' docker-compose.yml; then
+            echo "docker-compose.yml must not publish host ports (Traefik routes the app)" >&2
+            exit 1
+          fi
+      - uses: docker/setup-buildx-action@v3
+      - name: Build image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: nextseed-manga:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test container
+        run: |
+          docker run -d --name smoke -e PORT=3000 -p 3000:3000 nextseed-manga:ci
+          for i in $(seq 1 30); do
+            curl -fsS http://localhost:3000/api/health && break
+            sleep 1
+          done
+          curl -fsS -o /dev/null http://localhost:3000/
+          img=$(curl -fsS http://localhost:3000/ | grep -oE '/_next/image\?url=[^"& ]+&amp;w=[0-9]+&amp;q=[0-9]+' | head -n1 | sed 's/&amp;/\&/g')
+          echo "Optimised image: $img"
+          curl -fsS -o /dev/null -w "%{http_code} %{content_type}\n" "http://localhost:3000$img"
+      - name: Container logs
+        if: always()
+        run: docker logs smoke || true
