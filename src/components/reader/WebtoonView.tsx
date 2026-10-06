@@ -3,13 +3,15 @@
 import Image from "next/image";
 import { type ReactNode, type RefObject, useEffect, useLayoutEffect, useRef } from "react";
 
-import type { ReaderPage } from "./types";
+import { READING_QUALITY, type ReaderPage } from "./types";
 
 /** Pages ahead of the current one that load eagerly, so scrolling never reaches a blank page. */
 const PRELOAD_AHEAD = 3;
 
 type Props = {
   pages: ReaderPage[];
+  /** Accessible name of the page list, in the series language. */
+  label: string;
   /** Index of the page under the middle of the viewport (pages.length = end of chapter). */
   page: number;
   /** Page to scroll to when the view mounts (e.g. when switching from manga mode). */
@@ -26,6 +28,7 @@ type Props = {
 /** Webtoon mode: every page stacked vertically, without gaps, read with the native page scroll. */
 export function WebtoonView({
   pages,
+  label,
   page,
   initialPage,
   onPageChange,
@@ -105,7 +108,7 @@ export function WebtoonView({
     <div className="pt-14">
       <ol
         ref={listRef}
-        aria-label="Pages du chapitre"
+        aria-label={label}
         onClick={onTap}
         className="mx-auto flex max-w-3xl list-none flex-col"
       >
@@ -117,6 +120,7 @@ export function WebtoonView({
               preload={i === 0}
               loading={i <= page + PRELOAD_AHEAD ? "eager" : "lazy"}
               placeholder="blur"
+              quality={READING_QUALITY}
               draggable={false}
               sizes="(min-width: 768px) 768px, 100vw"
               className="block h-auto w-full select-none"

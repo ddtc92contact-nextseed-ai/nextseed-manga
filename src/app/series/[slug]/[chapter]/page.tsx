@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ChapterReader } from "@/components/reader/ChapterReader";
 import type { ReaderChapterLink } from "@/components/reader/types";
 import { type Chapter, getChapter, getSeries } from "@/lib/content";
+import { seriesLabels } from "@/lib/labels";
 import { ogImageUrl, pageMetadata } from "@/lib/metadata";
 
 export const dynamicParams = false;
@@ -21,9 +22,10 @@ export async function generateMetadata({
   const found = getChapter(slug, chapterSlug);
   if (!found) return {};
   const { series, chapter } = found;
+  const t = seriesLabels(series.language);
   return pageMetadata({
-    title: `${series.title} · Chapitre ${chapter.number}\u00a0: ${chapter.title}`,
-    description: chapter.summary ?? `Lisez le chapitre ${chapter.number} de ${series.title}. ${series.synopsis}`,
+    title: `${series.title} · ${t.chapter(chapter.number)} — ${chapter.title}`,
+    description: chapter.summary ?? `${t.readDescription(chapter.number, series.title)} ${series.synopsis}`,
     path: chapter.href,
     image: { url: ogImageUrl(series.href), alt: series.coverAlt },
     type: "article",
@@ -43,7 +45,14 @@ export default async function ChapterPage({ params }: PageProps<"/series/[slug]/
   return (
     <ChapterReader
       key={chapter.href}
-      series={{ slug: series.slug, title: series.title, href: series.href, readingMode: series.readingMode }}
+      series={{
+        slug: series.slug,
+        title: series.title,
+        href: series.href,
+        readingMode: series.readingMode,
+        readingDirection: series.readingDirection,
+        language: series.language,
+      }}
       chapter={{ number: chapter.number, title: chapter.title, pages: chapter.pages }}
       previous={chapterLink(previous)}
       next={chapterLink(next)}

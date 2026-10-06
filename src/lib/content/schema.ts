@@ -10,7 +10,7 @@ const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 /** Folder names become URLs, so they must be lowercase kebab-case. */
 export const slugSchema = z
   .string()
-  .regex(slugPattern, "must be lowercase letters, digits and hyphens (e.g. `blue-hour-ronin`)");
+  .regex(slugPattern, "must be lowercase letters, digits and hyphens (e.g. `ia-mi`)");
 
 const text = z.string().trim().min(1, "must not be empty");
 
@@ -46,10 +46,14 @@ export const artworkSchema = z.strictObject({
 
 export const seriesStatus = ["ongoing", "completed", "hiatus"] as const;
 export const readingModes = ["webtoon", "manga"] as const;
+export const readingDirections = ["ltr", "rtl"] as const;
+export const languages = ["fr", "en"] as const;
 
 /** content/series/<slug>/series.json */
 export const seriesSchema = z.strictObject({
   title: text,
+  /** Optional tagline shown under the title (e.g. "Le robot sans mémoire"). */
+  subtitle: text.optional(),
   synopsis: text,
   cover: imageFile,
   coverAlt: text,
@@ -60,6 +64,13 @@ export const seriesSchema = z.strictObject({
   aiTools,
   /** Default reader mode for the chapters: vertical webtoon scroll or page-by-page manga. */
   readingMode: z.enum(readingModes).default("webtoon"),
+  /**
+   * Page/panel order in `manga` mode: `rtl` (Japanese, right to left) or `ltr` (Western
+   * lettering, left to right, e.g. French originals).
+   */
+  readingDirection: z.enum(readingDirections).default("rtl"),
+  /** Language of the lettering; the series and chapter pages use matching labels. */
+  language: z.enum(languages).default("fr"),
 });
 
 /** content/series/<slug>/chapters/<chapter>/chapter.json */
@@ -69,6 +80,11 @@ export const chapterSchema = z.strictObject({
   title: text,
   date,
   summary: text.optional(),
+  /**
+   * Alternative text of each page, keyed by image file name (`"01.webp": "…"`).
+   * Pages without one get a generic "<series>, chapter N, page N".
+   */
+  pageAlt: z.record(imageFile, text).optional(),
 });
 
 export type ArtworkMeta = z.infer<typeof artworkSchema>;
@@ -76,3 +92,5 @@ export type SeriesMeta = z.infer<typeof seriesSchema>;
 export type ChapterMeta = z.infer<typeof chapterSchema>;
 export type SeriesStatus = (typeof seriesStatus)[number];
 export type ReadingMode = (typeof readingModes)[number];
+export type ReadingDirection = (typeof readingDirections)[number];
+export type Language = (typeof languages)[number];

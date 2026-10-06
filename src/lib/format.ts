@@ -13,5 +13,3 @@ const numberFormat = new Intl.NumberFormat("fr-FR");
 /** French plural: 0 and 1 take the singular ("0 chapitre", "1 page", "3 pages"). */
 export const plural = (count: number, word: string) =>
   `${numberFormat.format(count)}\u00a0${word}${count < 2 ? "" : "s"}`;
-
-export const seriesStatusLabel = { ongoing: "En cours", completed: "Terminée", hiatus: "En pause" } as const;

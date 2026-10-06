@@ -23,6 +23,7 @@ PORT=4000 npm run dev  # any port via the PORT env var
 | `npm run lint`  | ESLint (Next.js core-web-vitals + TS) |
 | `npm test`      | Unit tests (Vitest): forms, adapters  |
 | `npm run content` | Prepare the images in `content/` (runs automatically before `dev` and `build`) |
+| `npm run to-webp -- <folder> <images…>` | Convert exported PNG/JPG pages to WebP into a content folder |
 
 Set `SITE_URL` (e.g. `SITE_URL=https://manga.example.com npm run build`) when building for
 production: it is used for canonical URLs, Open Graph tags, `sitemap.xml` and `robots.txt`
@@ -40,10 +41,10 @@ src/
   components/     design-system components (Header, Footer, Button, Section, ArtworkCard, Gallery...)
   config/         social.ts: social network URLs + public contact email (edit me)
   lib/content/    build-time data layer: zod schemas + loader for content/
-  lib/            site config, SEO metadata helper, Open Graph renderer
+  lib/            site config, SEO metadata helper, Open Graph renderer, series labels (fr/en)
   server/         server-only logic: contact (zod + SMTP), newsletter adapters, rate limiting
-public/placeholder/   PLACEHOLDER hero / artist artwork (see below)
-scripts/          sync-content-images.mjs (image pipeline), generate-placeholders.mjs
+public/og-default.jpg share card of the pages without their own (made from the IA-MI cover)
+scripts/          sync-content-images.mjs (image pipeline), to-webp.mjs (convert exports)
 ```
 
 ## How to add a creation
@@ -72,10 +73,20 @@ The full format is documented in [`content/README.md`](content/README.md).
 **A series / a new chapter**
 
 1. Create `content/series/<slug>/` with `cover.webp` and `series.json` (title, synopsis, cover,
-   coverAlt, tags, status, date; optional aiTools and readingMode).
+   coverAlt, tags, status, date; optional subtitle, aiTools, readingMode, readingDirection,
+   language). `content/series/ia-mi/` is a complete example.
 2. For each chapter, create `content/series/<slug>/chapters/<NN>/` with a `chapter.json`
-   (`{ "number": 1, "title": "…", "date": "YYYY-MM-DD" }`) and the pages named `01.webp`,
-   `02.webp`… (read in file-name order).
+   (`{ "number": 1, "title": "…", "date": "YYYY-MM-DD" }`, optional `summary` and per-page
+   `pageAlt`) and the pages named `001.webp`, `002.webp`… (read in file-name order).
+3. Convert the exports to WebP instead of committing multi-MB PNGs (resolution is kept,
+   ~90 % lighter, lettering stays sharp):
+   ```bash
+   npm run to-webp -- content/series/ia-mi/chapters/02 ~/exports/chap2/*.png
+   npm run to-webp -- content/series/ia-mi ~/exports/cover.png
+   ```
+
+The most recently updated series is featured in the landing page hero (its cover, title,
+subtitle, synopsis and a "read chapter 1" button) and comes first in the gallery.
 
 **Check it**
 
@@ -90,6 +101,7 @@ npm run build    # fails with a message naming the file and field if a metadata 
   with a content hash in the file name, scales down originals wider than 2000 px, and records
   their size and a tiny blur placeholder. Every image goes through `next/image` with a `sizes`
   attribute, a blur placeholder and AVIF/WebP output, so phones never download the original.
+  Chapter pages are served at quality 90 (75 elsewhere) so the lettering stays crisp.
 - Every page has its own title, description, canonical URL and Open Graph / Twitter card.
   Artworks and series get a 1200×630 card rendered at build time from their image
   (`opengraph-image.ts`); other pages use `public/og-default.jpg`.
@@ -107,7 +119,7 @@ npm run build    # fails with a message naming the file and field if a metadata 
   - `Button` – `variant` `primary | ink | outline | ghost`, `size` `md | lg`; renders a `Link` when `href` is set.
   - `Section` – page section with optional `kicker`, `title`, `intro`, `action`; `tone` `ink | raised | accent`.
   - `ArtworkCard` – 3:4 artwork panel (next/image) with title, subtitle and panel number.
-  - `Hero` – full-bleed featured artwork with headline and actions.
+  - `Hero` – featured cover (shown whole) over a blurred copy, with headline and actions.
   - `Header` (+ `MobileNav`), `Footer`, `Wordmark`, `Container`.
   - `SocialLinks` – icon links for every network filled in `src/config/social.ts` (`size`, `showLabels`).
   - `FormField` / `FormStatus` – labelled input/textarea with inline errors; live status message.
@@ -122,18 +134,11 @@ Don't hard-code colours or fonts in components; add a token instead.
 
 **All UI copy is French.** The site is French-only (`<html lang="fr">`, Open Graph `locale: "fr_FR"`),
 so there is no i18n framework: strings live in the components that render them. Format dates and
-numbers with the `fr-FR` locale (`formatDate` / `plural` in `src/lib/format.ts`), and keep accessibility
+numbers with the `fr-FR` locale (`formatDate` / `plural` in `src/lib/format.ts`; labels around a series follow its
+`language` and live in `src/lib/labels.ts`), and keep accessibility
 text (alt, `aria-label`, sr-only), metadata and server messages returned to the forms in French too.
 Use typographic apostrophes (’) and a non-breaking space before `: ; ? !` (`&nbsp;` in JSX,
-` ` in JS strings). Code, comments and content field names stay in English.
-
-## Placeholder artwork
-
-Everything in `public/placeholder/`, `public/og-default.jpg` and the example creations in
-`content/` are generated placeholder art (each image is stamped "PLACEHOLDER"). Regenerate
-with `node scripts/generate-placeholders.mjs`. Replace the examples by adding real creations
-to `content/` (and deleting the placeholder folders); the hero/about images are imported in
-`src/app/page.tsx`.
+`\u00a0` in JS strings). Code, comments and content field names stay in English.
 
 ## Social links
 

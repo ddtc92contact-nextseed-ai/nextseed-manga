@@ -1,5 +1,5 @@
 import { type Creation, creationImage } from "@/lib/content";
-import { plural, seriesStatusLabel } from "@/lib/format";
+import { seriesLabels } from "@/lib/labels";
 
 import { ArtworkCard } from "./ArtworkCard";
 
@@ -16,10 +16,14 @@ type CreationCardProps = {
 export function CreationCard({ creation, sizes, index, naturalRatio, preload }: CreationCardProps) {
   const { image, alt } = creationImage(creation);
   const year = creation.date.slice(0, 4);
-  const subtitle =
-    creation.kind === "series"
-      ? `${plural(creation.chapters.length, "chapitre")} · ${seriesStatusLabel[creation.status]}`
-      : `Illustration · ${year}`;
+  let subtitle = `Illustration · ${year}`;
+  let badge: string | undefined;
+  if (creation.kind === "series") {
+    // Series labels follow the language of the manga ("1 chapitre · En cours").
+    const t = seriesLabels(creation.language);
+    subtitle = `${t.chapterCount(creation.chapters.length)} · ${t.status[creation.status]}`;
+    badge = t.series;
+  }
 
   return (
     <ArtworkCard
@@ -32,7 +36,7 @@ export function CreationCard({ creation, sizes, index, naturalRatio, preload }: 
       sizes={sizes}
       preload={preload}
       ratio={naturalRatio ? image.width / image.height : undefined}
-      badge={creation.kind === "series" ? "Série" : undefined}
+      badge={badge}
     />
   );
 }
