@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/*
+ * NextSeed Manga design tokens.
+ * Tailwind v4 reads its theme from this @theme block (it replaces tailwind.config).
+ * Use only these tokens in components: bg-ink-950, text-paper, text-accent, font-display, py-section...
+ */
+@theme {
+  /* Ink: the dark, dense blacks of a printed manga page. */
+  --color-ink-950: #07070a;
+  --color-ink-900: #0e0e12;
+  --color-ink-800: #17171d;
+  --color-ink-700: #26262e;
+  --color-ink-600: #3a3a45;
+
+  /* Paper: off-white newsprint used for text on ink. */
+  --color-paper: #f3efe6;
+  --color-paper-muted: #b9b4a8;
+  --color-paper-faint: #8a867d;
+
+  /* Accent: hanko-stamp red. Ink text on accent and accent text on ink both pass WCAG AA. */
+  --color-accent: #ff3b4e;
+  --color-accent-strong: #ff6170;
+
+  /* Fonts are injected by next/font as CSS variables in the root layout. */
+  --font-display: var(--font-dela-gothic), "Arial Black", sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Layout spacing. */
+  --spacing-gutter: 1rem;
+  --spacing-gutter-lg: 2.5rem;
+  --spacing-section: 5rem;
+  --spacing-section-lg: 8rem;
+  --container-site: 88rem;
+
+  /* Display type scale for headlines. */
+  --text-display-sm: clamp(2.25rem, 7vw, 3.5rem);
+  --text-display-sm--line-height: 1.05;
+  --text-display: clamp(2.75rem, 8vw, 6rem);
+  --text-display--line-height: 0.95;
+
+  --tracking-kicker: 0.25em;
+}
+
+/* Ink & screentone textures. */
+@utility bg-screentone {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-paper) 14%, transparent) 1px,
+    transparent 1.5px
+  );
+  background-size: 8px 8px;
+}
+
+@utility bg-screentone-accent {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-ink-950) 28%, transparent) 1.5px,
+    transparent 2px
+  );
+  background-size: 10px 10px;
+}
+
+@utility bg-speedlines {
+  background-image: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    color-mix(in oklab, var(--color-paper) 6%, transparent) 0deg 1.5deg,
+    transparent 1.5deg 9deg
+  );
+}
+
+/* Thick manga-panel frame. */
+@utility panel {
+  border: 3px solid var(--color-paper);
+  box-shadow: 6px 6px 0 0 var(--color-accent);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--color-ink-950);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-ink-950);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
