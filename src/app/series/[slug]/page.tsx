@@ -59,7 +59,7 @@ export default async function SeriesPage({ params }: PageProps<"/series/[slug]">
             <p className="text-xs font-semibold uppercase tracking-kicker text-accent">
               Series · {statusLabel[series.status]}
             </p>
-            <h1 className="mt-3 font-display text-display">{series.title}</h1>
+            <h1 className="mt-3 font-display text-display hyphens-auto [overflow-wrap:anywhere]">{series.title}</h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-paper-muted">{series.synopsis}</p>
             {first && (
               <div className="mt-8">

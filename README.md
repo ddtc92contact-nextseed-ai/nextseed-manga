@@ -21,6 +21,7 @@ PORT=4000 npm run dev  # any port via the PORT env var
 | `npm run build` | Production build                     |
 | `npm run start` | Serve the production build (`PORT`)  |
 | `npm run lint`  | ESLint (Next.js core-web-vitals + TS) |
+| `npm test`      | Unit tests (Vitest): forms, adapters  |
 | `npm run content` | Prepare the images in `content/` (runs automatically before `dev` and `build`) |
 
 Set `SITE_URL` (e.g. `SITE_URL=https://manga.example.com npm run build`) when building for
@@ -32,11 +33,15 @@ production: it is used for canonical URLs, Open Graph tags, `sitemap.xml` and `r
 ```
 content/          the creations: series, chapters, artworks (JSON + images), see content/README.md
 src/
-  app/            routes: /, /gallery, /gallery/tags/[tag], /series/[slug], /series/[slug]/[chapter],
-                  /artworks/[slug], opengraph-image routes, sitemap.ts, robots.ts, 404
+  app/            routes: /, /about, /gallery, /gallery/tags/[tag], /series/[slug],
+                  /series/[slug]/[chapter], /artworks/[slug], opengraph-image routes,
+                  sitemap.ts, robots.ts, 404
+  app/actions/    server actions used by the contact & newsletter forms
   components/     design-system components (Header, Footer, Button, Section, ArtworkCard, Gallery...)
+  config/         social.ts: social network URLs + public contact email (edit me)
   lib/content/    build-time data layer: zod schemas + loader for content/
   lib/            site config, SEO metadata helper, Open Graph renderer
+  server/         server-only logic: contact (zod + SMTP), newsletter adapters, rate limiting
 public/placeholder/   PLACEHOLDER hero / artist artwork (see below)
 scripts/          sync-content-images.mjs (image pipeline), generate-placeholders.mjs
 ```
@@ -104,6 +109,12 @@ npm run build    # fails with a message naming the file and field if a metadata 
   - `ArtworkCard` – 3:4 artwork panel (next/image) with title, subtitle and panel number.
   - `Hero` – full-bleed featured artwork with headline and actions.
   - `Header` (+ `MobileNav`), `Footer`, `Wordmark`, `Container`.
+  - `SocialLinks` – icon links for every network filled in `src/config/social.ts` (`size`, `showLabels`).
+  - `FormField` / `FormStatus` – labelled input/textarea with inline errors; live status message.
+  - `ContactForm` (+ `ContactFallback`), `NewsletterSignup` (`variant` `compact | panel`), `Faq`.
+
+`NewsletterSignup` is an async server component that renders nothing when no provider is configured;
+wrap it in `<Suspense>`. Use `variant="panel"` for a framed call-to-action at the end of a chapter.
 
 Don't hard-code colours or fonts in components; add a token instead.
 
@@ -114,6 +125,40 @@ Everything in `public/placeholder/`, `public/og-default.jpg` and the example cre
 with `node scripts/generate-placeholders.mjs`. Replace the examples by adding real creations
 to `content/` (and deleting the placeholder folders); the hero/about images are imported in
 `src/app/page.tsx`.
+
+## Social links
+
+Edit `src/config/social.ts`: one URL per network (Instagram, X, TikTok, YouTube, Pixiv, Bluesky,
+Threads, Discord, Patreon). An empty string hides that network in the footer and on `/about`.
+`contactEmail` in the same file is shown when the contact form is unavailable.
+
+## Environment variables
+
+All optional. In production, set them in the server's `.env` next to the deployment variables
+(`docker compose` passes the whole file to the container, see `.env.example`); for local development
+put them in `.env.local`. They are read **at request time**, so changing them only needs a container
+restart (`docker compose up -d`), not a rebuild.
+
+| Variable        | Used for                                                        | When missing                         |
+| --------------- | --------------------------------------------------------------- | ------------------------------------ |
+| `SMTP_HOST`     | Contact form: SMTP server                                       | Form replaced by an email fallback   |
+| `SMTP_PORT`     | SMTP port (`465` = TLS, otherwise STARTTLS)                     | `587`                                |
+| `SMTP_USER`     | SMTP login                                                      | No authentication                    |
+| `SMTP_PASS`     | SMTP password                                                   | —                                    |
+| `SMTP_FROM`     | Sender address of contact emails                                | `SMTP_USER`, then `CONTACT_TO`       |
+| `CONTACT_TO`    | Mailbox receiving contact messages                              | Form replaced by an email fallback   |
+| `BREVO_API_KEY` | Newsletter: Brevo API key                                       | Newsletter signup hidden             |
+| `BREVO_LIST_ID` | Newsletter: numeric id of the Brevo list to add subscribers to  | Newsletter signup hidden             |
+
+Both forms validate on the server (zod), and are rate-limited to 5 submissions per IP per 15 minutes
+(in memory, using `X-Forwarded-For` from the reverse proxy). The contact form also has a honeypot field.
+
+To try the contact form locally without a real mailbox, run a catcher such as
+[Mailpit](https://mailpit.axllent.org/) and set `SMTP_HOST=127.0.0.1`, `SMTP_PORT=1025`,
+`CONTACT_TO=you@example.test`.
+
+To swap newsletter providers, add an adapter implementing `NewsletterProvider`
+(`src/server/newsletter/types.ts`) next to `brevo.ts` and select it in `getNewsletterProvider()`.
 
 ## Deployment
 

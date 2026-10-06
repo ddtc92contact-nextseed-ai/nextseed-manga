@@ -10,7 +10,8 @@ export const site = {
   url: (process.env.SITE_URL ?? "http://localhost:3000").replace(/\/+$/, ""),
   nav: [
     { label: "Gallery", href: "/gallery" },
-    { label: "About", href: "/#about" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/about#contact" },
     { label: "Follow", href: "/#follow" },
   ],
 } as const;

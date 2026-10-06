@@ -11,6 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     { url: url("/"), lastModified, changeFrequency: "weekly", priority: 1 },
+    { url: url("/about"), changeFrequency: "monthly", priority: 0.5 },
     { url: url("/gallery"), lastModified, changeFrequency: "weekly", priority: 0.9 },
     ...getTags().map(({ tag }) => ({
       url: url(`/gallery/tags/${tag}`),

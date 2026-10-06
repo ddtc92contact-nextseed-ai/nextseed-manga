@@ -54,7 +54,7 @@ export default async function ArtworkPage({ params }: PageProps<"/artworks/[slug
 
           <div className="lg:sticky lg:top-24 lg:self-start">
             <p className="text-xs font-semibold uppercase tracking-kicker text-accent">Artwork</p>
-            <h1 className="mt-3 font-display text-display-sm">{artwork.title}</h1>
+            <h1 className="mt-3 font-display text-display-sm hyphens-auto [overflow-wrap:anywhere] lg:text-[2.75rem]">{artwork.title}</h1>
             <p className="mt-6 text-lg leading-relaxed text-paper-muted">{artwork.description}</p>
             <div className="mt-8">
               <DetailList

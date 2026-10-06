@@ -55,6 +55,7 @@ export function Gallery({ tag }: GalleryProps) {
         </ul>
       </nav>
 
+      <h2 className="sr-only">Creations</h2>
       <ul className="columns-2 gap-4 sm:gap-6 md:columns-3 lg:gap-8 xl:columns-4">
         {creations.map((creation, i) => (
           <li key={creation.href} className="mb-8 break-inside-avoid lg:mb-12">

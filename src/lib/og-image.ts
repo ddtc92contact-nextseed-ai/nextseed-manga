@@ -4,6 +4,9 @@ import sharp from "sharp";
 
 import type { ContentImage } from "./content";
 
+/** Same value as --color-accent in src/app/globals.css (sharp cannot read CSS tokens). */
+const accent = "#ff3b4e";
+
 export const ogSize = { width: 1200, height: 630 };
 
 /**
@@ -24,7 +27,7 @@ export async function renderOgImage(image: ContentImage): Promise<Response> {
     .resize(width - 80, height - 48, { fit: "inside" })
     .toBuffer();
   const bar = await sharp({
-    create: { width, height: 8, channels: 3, background: "#ff3b4e" },
+    create: { width, height: 8, channels: 3, background: accent },
   })
     .png()
     .toBuffer();
