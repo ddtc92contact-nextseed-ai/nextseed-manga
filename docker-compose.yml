@@ -1,0 +1,49 @@
+# Production stack for the VPS: one container routed by the existing Traefik v2.
+# No host port is published; Traefik reaches the app on the shared external network.
+# Every value comes from .env (copy .env.example). See DEPLOY.md.
+name: nextseed-manga
+
+services:
+  nextseed-manga:
+    build:
+      context: .
+    image: nextseed-manga:${IMAGE_TAG:-latest}
+    container_name: nextseed-manga
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: "3000"
+      HOSTNAME: 0.0.0.0
+    expose:
+      - "3000"
+    networks:
+      - traefik
+    # Keep the neighbours safe: bounded memory and rotated logs.
+    mem_limit: 768m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_NETWORK:?set TRAEFIK_NETWORK in .env}
+      # HTTPS router (names prefixed "nextseed-manga" to never collide with other apps).
+      - traefik.http.routers.nextseed-manga.rule=Host(`${SITE_DOMAIN:?set SITE_DOMAIN in .env}`)
+      - traefik.http.routers.nextseed-manga.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}
+      - traefik.http.routers.nextseed-manga.tls=true
+      - traefik.http.routers.nextseed-manga.tls.certresolver=${TRAEFIK_CERTRESOLVER:?set TRAEFIK_CERTRESOLVER in .env}
+      - traefik.http.routers.nextseed-manga.service=nextseed-manga
+      - traefik.http.services.nextseed-manga.loadbalancer.server.port=3000
+      # Optional http -> https redirect. Only needed if Traefik does NOT already redirect
+      # globally on its "web" entrypoint (see DEPLOY.md, section "Redirection HTTP -> HTTPS").
+      # - traefik.http.routers.nextseed-manga-http.rule=Host(`${SITE_DOMAIN}`)
+      # - traefik.http.routers.nextseed-manga-http.entrypoints=${TRAEFIK_HTTP_ENTRYPOINT:-web}
+      # - traefik.http.routers.nextseed-manga-http.middlewares=nextseed-manga-https
+      # - traefik.http.middlewares.nextseed-manga-https.redirectscheme.scheme=https
+      # - traefik.http.middlewares.nextseed-manga-https.redirectscheme.permanent=true
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK:?set TRAEFIK_NETWORK in .env}
