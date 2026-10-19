@@ -60,7 +60,10 @@ function ConsentPanel({
   // Escape closes the panel (a refusal if no choice was made yet).
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") consentStore.dismiss();
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      // Handled here: keeps the manga reader (window listener, checks defaultPrevented) from exiting.
+      event.preventDefault();
+      consentStore.dismiss();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
