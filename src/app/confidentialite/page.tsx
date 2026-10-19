@@ -23,7 +23,7 @@ type Processing = {
   transfers: ReactNode;
 };
 
-const { publisher, host, emailProvider } = legal;
+const { publisher, host } = legal;
 
 const processings: Processing[] = [
   {
@@ -37,11 +37,11 @@ const processings: Processing[] = [
       "Le temps de traiter votre demande, puis 3 ans maximum après le dernier échange. Le site lui-même ne stocke pas les messages : ils sont transmis par e-mail.",
     recipients: (
       <>
-        L’éditeur uniquement. Sous-traitants&nbsp;: le fournisseur de messagerie ({emailProvider.name}) et
-        l’hébergeur du site ({host.name}).
+        L’éditeur uniquement. Sous-traitants&nbsp;: le fournisseur de messagerie de l’éditeur, qui achemine
+        et héberge les e-mails, et l’hébergeur du site ({host.name}, Chypre).
       </>
     ),
-    transfers: <>Aucun transfert prévu hors de l’Union européenne (hébergement des e-mails&nbsp;: {emailProvider.location}).</>,
+    transfers: "Aucun transfert prévu hors de l’Union européenne.",
   },
   {
     id: "newsletter",
@@ -84,8 +84,8 @@ const processings: Processing[] = [
     data: "Adresse IP, date et heure, page demandée, navigateur (en-tête User-Agent), code de réponse.",
     retention:
       "Compteur anti-abus : en mémoire uniquement, 15 minutes au plus, effacé à chaque redémarrage. Journaux du serveur : rotation automatique, 12 mois maximum.",
-    recipients: <>L’éditeur. Sous-traitant&nbsp;: l’hébergeur du site ({host.name}).</>,
-    transfers: <>Aucun (localisation du serveur&nbsp;: {host.location}).</>,
+    recipients: <>L’éditeur. Sous-traitant&nbsp;: l’hébergeur du site ({host.name}, Chypre).</>,
+    transfers: <>Aucun transfert prévu hors de l’Union européenne (serveur VPS loué auprès de {host.name}).</>,
   },
 ];
 
@@ -102,8 +102,9 @@ export default function PrivacyPage() {
     >
       <h2>Responsable du traitement</h2>
       <p>
-        {publisher.companyName} ({publisher.brand}), {publisher.address}, représentée par{" "}
-        {legal.publicationDirector}. Contact pour toute question sur vos données&nbsp;:{" "}
+        {publisher.companyName} (marque {publisher.brand}), {publisher.legalForm.charAt(0).toLowerCase()}
+        {publisher.legalForm.slice(1)}, immatriculée au {publisher.registration}, ayant son siège social{" "}
+        {publisher.address}, représentée par son Président. Contact pour toute question sur vos données&nbsp;:{" "}
         <LegalEmail email={publisher.email} />.
       </p>
 

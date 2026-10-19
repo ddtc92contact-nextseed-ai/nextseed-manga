@@ -181,10 +181,11 @@ To swap newsletter providers, add an adapter implementing `NewsletterProvider`
 
 **Legal pages** – `/mentions-legales`, `/confidentialite` and `/cookies`, linked from the footer of
 every page together with a "Gérer les cookies" button. The publisher identity (company, legal form,
-SIREN, registered office, contact email, publication director, host, SMTP provider) lives in a single
-file: **`src/config/legal.ts`**. Every value starting with `TODO(manager)` is a placeholder shown as-is
-on the pages until you fill it in (SIREN, address, host, email provider…); also update `lastUpdated`
-when you change the texts. The site URL is never hard-coded: it comes from `SITE_URL`.
+SIRET, RCS, VAT number, registered office, contact email, publication director, host) lives in a single
+file: **`src/config/legal.ts`**. The publisher is the company DD TECH CONSULT: no personal name appears
+on the site, and the publication director is named by function ("Le Président de DD TECH CONSULT").
+`src/config/legal.test.ts` fails if a `TODO(manager)` placeholder or an empty value comes back; also
+update `lastUpdated` when you change the texts. The site URL is never hard-coded: it comes from `SITE_URL`.
 
 **Consent banner** (`src/components/consent/`, logic in `src/lib/consent/`):
 - Shown on the first visit when an optional category exists (i.e. `GA_MEASUREMENT_ID` is set);

@@ -29,13 +29,14 @@ export default function LegalNoticePage() {
       </p>
       <LegalDetails
         items={[
-          ["Société", publisher.companyName],
-          ["Marque", publisher.brand],
+          ["Dénomination", `${publisher.companyName} (marque ${publisher.brand})`],
           ["Forme juridique", publisher.legalForm],
+          ["Siège social", publisher.address],
           ["SIREN", publisher.siren],
+          ["SIRET (siège)", publisher.siret],
           ["Immatriculation", publisher.registration],
           ["TVA intracommunautaire", publisher.vatNumber],
-          ["Siège social", publisher.address],
+          ["Code APE", publisher.apeCode],
           ["Contact", <LegalEmail key="email" email={publisher.email} />],
         ]}
       />
@@ -44,11 +45,12 @@ export default function LegalNoticePage() {
       <p>{legal.publicationDirector}.</p>
 
       <h2>Hébergement</h2>
+      <p>Le site est hébergé sur un serveur privé virtuel (VPS) loué auprès de&nbsp;:</p>
       <LegalDetails
         items={[
           ["Hébergeur", host.name],
           ["Adresse", host.address],
-          ["Téléphone", host.phone],
+          ["Site web", <a key="website" href={host.website}>{host.website.replace(/^https?:\/\//, "")}</a>],
         ]}
       />
 

@@ -18,9 +18,9 @@ export const socialLinks = {
 
 /**
  * Public email shown as the fallback when the contact form can't send (SMTP not configured).
- * TODO(manager): replace with your real address, or "" to only point to the social links.
+ * Same address as the legal pages (src/config/legal.ts); "" to only point to the social links.
  */
-export const contactEmail = "contact@example.com";
+export const contactEmail = "contact@nextseed-ai.org";
 
 export type SocialNetwork =
   | "instagram"
