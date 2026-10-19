@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 
 import { sendContactMessage } from "@/app/actions/contact";
@@ -50,6 +51,14 @@ export function ContactForm() {
         defaultValue={values.message}
         errors={errors.message}
       />
+
+      <p className="text-sm leading-relaxed text-paper-faint">
+        Vos nom, e-mail et message servent uniquement à vous répondre et ne sont jamais revendus ni utilisés
+        pour de la prospection.{" "}
+        <Link href="/confidentialite#contact" className="text-paper-muted underline underline-offset-2 hover:text-paper">
+          En savoir plus sur vos données
+        </Link>
+      </p>
 
       {/* Honeypot: hidden from people and assistive tech, tempting for bots. */}
       <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">

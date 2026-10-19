@@ -13,6 +13,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: url("/"), lastModified, changeFrequency: "weekly", priority: 1 },
     { url: url("/about"), changeFrequency: "monthly", priority: 0.5 },
     { url: url("/gallery"), lastModified, changeFrequency: "weekly", priority: 0.9 },
+    ...["/mentions-legales", "/confidentialite", "/cookies"].map((path) => ({
+      url: url(path),
+      changeFrequency: "yearly" as const,
+      priority: 0.1,
+    })),
     ...getTags().map(({ tag }) => ({
       url: url(`/gallery/tags/${tag}`),
       changeFrequency: "weekly" as const,
