@@ -142,6 +142,24 @@ curl https://<ton-domaine>/api/health   # {"status":"ok"}
 Traefik ignore un conteneur tant que son healthcheck n'est pas « healthy » : un 404 Traefik
 pendant les premières secondes est normal.
 
+### Google Analytics (optionnel)
+
+Pour mesurer l’audience, ajoute l’ID de mesure GA4 dans `.env` (GA › Administration › Flux de
+données › ton flux web, format `G-XXXXXXXXXX`) :
+
+```bash
+GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+La variable est lue **au moment de la requête** (comme SMTP et Brevo) : `docker compose` la passe au
+conteneur via `env_file`, il n’y a **ni build arg ni rebuild** à faire, un `docker compose up -d`
+suffit. Sans valeur, aucun code Google n’est chargé et le bandeau cookies n’apparaît pas. Avec une
+valeur, GA n’est chargé qu’après « Tout accepter » dans le bandeau. Réglages à faire côté GA4 : voir
+le README, section « Legal pages, cookies and analytics ».
+
+Pense aussi à remplir les mentions légales dans `src/config/legal.ts` (SIREN, adresse, hébergeur…)
+avant la mise en ligne.
+
 ## 5. Mettre à jour (nouvelle création, correctif...)
 
 ```bash

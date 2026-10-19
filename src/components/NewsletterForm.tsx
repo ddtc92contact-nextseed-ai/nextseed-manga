@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useId } from "react";
 
 import { subscribeToNewsletter } from "@/app/actions/newsletter";
@@ -33,7 +34,7 @@ export function NewsletterForm() {
           placeholder="vous@exemple.fr"
           defaultValue={state.values?.email}
           aria-invalid={error ? true : undefined}
-          aria-describedby={`${id}-status`}
+          aria-describedby={`${id}-status ${id}-notice`}
           className={`${fieldControlClasses} min-h-11 sm:flex-1`}
         />
         <Button type="submit" disabled={pending} className="shrink-0 disabled:opacity-60">
@@ -43,6 +44,13 @@ export function NewsletterForm() {
       <div id={`${id}-status`}>
         <FormStatus state={state} className="mt-3 empty:hidden" />
       </div>
+      <p id={`${id}-notice`} className="mt-3 text-xs leading-relaxed text-paper-faint">
+        Votre e-mail sert uniquement à vous envoyer la newsletter (via Brevo). Désinscription possible à
+        tout moment, en un clic depuis chaque e-mail.{" "}
+        <Link href="/confidentialite#newsletter" className="underline underline-offset-2 hover:text-paper">
+          Confidentialité
+        </Link>
+      </p>
     </form>
   );
 }

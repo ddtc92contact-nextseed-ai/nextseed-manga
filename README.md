@@ -35,11 +35,13 @@ production: it is used for canonical URLs, Open Graph tags, `sitemap.xml` and `r
 content/          the creations: series, chapters, artworks (JSON + images), see content/README.md
 src/
   app/            routes: /, /about, /gallery, /gallery/tags/[tag], /series/[slug],
-                  /series/[slug]/[chapter], /artworks/[slug], opengraph-image routes,
+                  /series/[slug]/[chapter], /artworks/[slug], /mentions-legales, /confidentialite,
+                  /cookies, opengraph-image routes,
                   sitemap.ts, robots.ts, 404
   app/actions/    server actions used by the contact & newsletter forms
   components/     design-system components (Header, Footer, Button, Section, ArtworkCard, Gallery...)
   config/         social.ts: social network URLs + public contact email (edit me)
+                  legal.ts: publisher identity for the legal pages (edit me, see "Legal pages")
   lib/content/    build-time data layer: zod schemas + loader for content/
   lib/            site config, SEO metadata helper, Open Graph renderer, series labels (fr/en)
   server/         server-only logic: contact (zod + SMTP), newsletter adapters, rate limiting
@@ -163,6 +165,7 @@ restart (`docker compose up -d`), not a rebuild.
 | `CONTACT_TO`    | Mailbox receiving contact messages                              | Form replaced by an email fallback   |
 | `BREVO_API_KEY` | Newsletter: Brevo API key                                       | Newsletter signup hidden             |
 | `BREVO_LIST_ID` | Newsletter: numeric id of the Brevo list to add subscribers to  | Newsletter signup hidden             |
+| `GA_MEASUREMENT_ID` | Google Analytics 4 measurement ID (`G-XXXXXXXXXX`), loaded only with consent | No GA, no banner, no Google request |
 
 Both forms validate on the server (zod), and are rate-limited to 5 submissions per IP per 15 minutes
 (in memory, using `X-Forwarded-For` from the reverse proxy). The contact form also has a honeypot field.
@@ -173,6 +176,38 @@ To try the contact form locally without a real mailbox, run a catcher such as
 
 To swap newsletter providers, add an adapter implementing `NewsletterProvider`
 (`src/server/newsletter/types.ts`) next to `brevo.ts` and select it in `getNewsletterProvider()`.
+
+## Legal pages, cookies and analytics (GDPR / CNIL)
+
+**Legal pages** – `/mentions-legales`, `/confidentialite` and `/cookies`, linked from the footer of
+every page together with a "Gérer les cookies" button. The publisher identity (company, legal form,
+SIREN, registered office, contact email, publication director, host, SMTP provider) lives in a single
+file: **`src/config/legal.ts`**. Every value starting with `TODO(manager)` is a placeholder shown as-is
+on the pages until you fill it in (SIREN, address, host, email provider…); also update `lastUpdated`
+when you change the texts. The site URL is never hard-coded: it comes from `SITE_URL`.
+
+**Consent banner** (`src/components/consent/`, logic in `src/lib/consent/`):
+- Shown on the first visit when an optional category exists (i.e. `GA_MEASUREMENT_ID` is set);
+  "Tout refuser", "Tout accepter" and "Personnaliser" have the same weight. Closing it (× or Escape)
+  counts as a refusal.
+- The choice (`nextseed:consent` in localStorage) is kept 6 months, then the banner asks again.
+  Bump `CONSENT_VERSION` in `src/lib/consent/store.ts` when you add a category, to ask everyone again.
+- Non-modal (the page stays usable, so no focus trap); in the chapter reader it sits above the
+  bottom controls.
+
+**Google Analytics 4** (`src/lib/consent/gtag.ts`), only when `GA_MEASUREMENT_ID` is set:
+- Consent Mode v2 with everything `denied` by default. gtag.js is not even requested before the
+  visitor accepts; accepting grants `analytics_storage` only (ads storage, `ad_user_data` and
+  `ad_personalization` stay denied). Refusing later stops tracking and deletes the `_ga*` cookies.
+- Page views are sent by the app on every navigation (App Router included), without query string.
+  Events: `chapter_open` (series, chapter) and `reader_mode` (series, mode). Never send personal data
+  with `trackEvent()`.
+- Minimisation: Google signals and ad personalisation off, cookies limited to 13 months and not
+  extended on each visit. GA4 does not store IP addresses.
+- In the GA4 admin, also: *Data streams › Enhanced measurement › Page views › Advanced* → untick
+  "Page changes based on browser history events" (the app already sends them, otherwise they are
+  counted twice); *Data settings › Data retention* → 14 months max (the privacy policy says so);
+  *Data collection* → leave Google signals off and disable granular location and device data.
 
 ## Deployment
 

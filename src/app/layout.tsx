@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Dela_Gothic_One, Inter } from "next/font/google";
+import { Suspense } from "react";
 
+import { Consent } from "@/components/consent/Consent";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { defaultOgImage } from "@/lib/metadata";
@@ -56,6 +58,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           Aller au contenu
         </a>
+        {/* Early in the tab order so keyboard users reach the cookie choice first. */}
+        <Suspense>
+          <Consent />
+        </Suspense>
         <Header />
         <main id="main" className="flex-1">
           {children}
