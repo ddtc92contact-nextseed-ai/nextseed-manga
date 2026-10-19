@@ -26,6 +26,13 @@ jobs:
       - run: npm run lint
       - run: npm test
       - run: npm run build
+      - name: No personal name of the manager in the built site
+        run: |
+          # The publisher is the company (DD TECH CONSULT): no personal first or last name on the site.
+          if grep -rIilwE 'david|duhamel' .next/server .next/static; then
+            echo "A personal name of the manager appears in the build output (see src/config/legal.ts)" >&2
+            exit 1
+          fi
 
   docker:
     name: Docker image & compose
@@ -62,6 +69,14 @@ jobs:
           img=$(curl -fsS http://localhost:3000/ | grep -oE '/_next/image\?url=[^"& ]+&amp;w=[0-9]+&amp;q=[0-9]+' | head -n1 | sed 's/&amp;/\&/g')
           echo "Optimised image: $img"
           curl -fsS -o /dev/null -w "%{http_code} %{content_type}\n" "http://localhost:3000$img"
+          for page in mentions-legales confidentialite cookies; do
+            html=$(curl -fsS "http://localhost:3000/$page")
+            if grep -qF 'TODO(manager)' <<<"$html" || grep -qiwE 'david|duhamel' <<<"$html"; then
+              echo "/$page still shows a placeholder or a personal name" >&2
+              exit 1
+            fi
+          done
+          curl -fsS http://localhost:3000/mentions-legales | grep -qF 'DD TECH CONSULT'
       - name: Container logs
         if: always()
         run: docker logs smoke || true

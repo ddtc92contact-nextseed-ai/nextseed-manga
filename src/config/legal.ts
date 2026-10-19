@@ -1,37 +1,32 @@
 /**
  * Legal identity of the publisher, used by /mentions-legales and /confidentialite.
  *
- * TODO(manager): replace every value starting with "TODO(manager)" (SIREN, registered office,
- * legal form, host, SMTP provider, contact email). They are shown as-is on the legal pages until
- * filled in. The site URL is never written here: it comes from SITE_URL (src/lib/site.ts).
+ * The publisher is the company, never a person: no personal first or last name may appear here
+ * (the publication director is named by function). `src/config/legal.test.ts` fails if a
+ * "TODO(manager)" placeholder comes back. The site URL is never written here: it comes from
+ * SITE_URL (src/lib/site.ts).
  */
 export const legal = {
   publisher: {
-    companyName: "DDTC — DD TECH CONSULT",
+    companyName: "DD TECH CONSULT",
     brand: "NextSeed-AI",
-    /** e.g. "SASU au capital de 1 000 €". */
-    legalForm: "TODO(manager): forme juridique et capital social (ex. SASU au capital de 1 000 €)",
-    siren: "TODO(manager): numéro SIREN (9 chiffres)",
-    /** e.g. "RCS Nanterre 123 456 789". */
-    registration: "TODO(manager): RCS Nanterre + numéro",
-    vatNumber: "TODO(manager): numéro de TVA intracommunautaire (ou supprimer la ligne)",
-    address: "TODO(manager): numéro et rue, 92300 Levallois-Perret, France",
+    legalForm: "Société par actions simplifiée (SAS) à capital variable, au capital de 100\u00a0€",
+    siren: "999 528 664",
+    siret: "999 528 664 00017",
+    registration: "RCS Nanterre 999 528 664",
+    vatNumber: "FR75999528664",
+    apeCode: "6202A (Conseil en systèmes et logiciels informatiques)",
+    address: "64 rue Anatole France, 92300 Levallois-Perret, France",
     /** Address for legal questions and privacy requests (access, erasure...). */
-    email: "TODO(manager): adresse e-mail de contact (ex. contact@nextseed-ai.fr)",
+    email: "contact@nextseed-ai.org",
   },
-  /** Directeur de la publication. */
-  publicationDirector: "David Duhamel, président de DDTC",
+  /** Directeur de la publication: the function, never a personal name. */
+  publicationDirector: "Le Président de DD TECH CONSULT",
+  /** Host of the VPS the site runs on. */
   host: {
-    name: "TODO(manager): nom de l’hébergeur du serveur (VPS)",
-    address: "TODO(manager): adresse postale de l’hébergeur",
-    phone: "TODO(manager): téléphone de l’hébergeur",
-    /** Country where the server is located (shown in the privacy policy). */
-    location: "TODO(manager): pays du datacenter (ex. France)",
-  },
-  /** Email service the contact form sends through (SMTP_HOST). */
-  emailProvider: {
-    name: "TODO(manager): fournisseur de messagerie (SMTP) qui reçoit les messages du formulaire",
-    location: "TODO(manager): pays d’hébergement des e-mails (ex. Union européenne)",
+    name: "Hostinger International Ltd",
+    address: "61 Lordou Vironos Street, 6023 Larnaca, Chypre",
+    website: "https://www.hostinger.fr",
   },
   /** Date shown at the top of the legal pages ("Dernière mise à jour"). */
   lastUpdated: "2026-10-19",
