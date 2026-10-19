@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { trackEvent } from "@/lib/consent/gtag";
 import { seriesLabels } from "@/lib/labels";
 
 import { ChapterEnd } from "./ChapterEnd";
@@ -89,6 +90,11 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
 
   useEffect(() => () => window.clearTimeout(hideTimer.current), []);
 
+  // Analytics (sent only with the visitor's consent): which chapters are opened.
+  useEffect(() => {
+    trackEvent("chapter_open", { series: series.slug, chapter: chapter.number });
+  }, [series.slug, chapter.number]);
+
   // Desktop: bring the chrome back when the mouse nears the top or bottom edge (webtoon mode;
   // in manga mode any movement over the page does it).
   useEffect(() => {
@@ -122,6 +128,7 @@ export function ChapterReader({ series, chapter, previous, next }: ReaderData) {
   const switchMode = (next: typeof mode) => {
     if (next === mode) return;
     setMode(next);
+    trackEvent("reader_mode", { series: series.slug, mode: next });
     setChromeVisible(true);
     window.clearTimeout(hideTimer.current);
   };

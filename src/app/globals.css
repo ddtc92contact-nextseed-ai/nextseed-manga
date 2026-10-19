@@ -82,6 +82,63 @@ body:has(#reader[data-mode="manga"]) > footer {
   display: none;
 }
 
+/* Long-form text of the legal pages (/mentions-legales, /confidentialite, /cookies). */
+@utility legal-prose {
+  max-width: 48rem;
+  line-height: 1.7;
+  color: var(--color-paper-muted);
+
+  & h2 {
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    line-height: 1.2;
+    color: var(--color-paper);
+  }
+  & h3 {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--color-paper);
+  }
+  & p,
+  & ul,
+  & dl {
+    margin-top: 0.75rem;
+  }
+  & ul {
+    list-style: square;
+    padding-left: 1.25rem;
+  }
+  & li + li {
+    margin-top: 0.375rem;
+  }
+  & li::marker {
+    color: var(--color-accent);
+  }
+  & a {
+    color: var(--color-paper);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    overflow-wrap: anywhere;
+  }
+  & a:hover {
+    color: var(--color-accent);
+  }
+  & strong,
+  & dt {
+    color: var(--color-paper);
+    font-weight: 600;
+  }
+}
+
+/* In the reader, the cookie panel sits above the bottom controls instead of covering them. */
+body:has(#reader) .consent-panel {
+  bottom: calc(3.75rem + env(safe-area-inset-bottom));
+  max-height: calc(85dvh - 7.25rem);
+}
+
 @layer base {
   html {
     color-scheme: dark;
